@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e5a3e179-ae63-4343-828b-9a02060be9bb" name="Default Changelist" comment="" />
+    <list default="true" id="e5a3e179-ae63-4343-828b-9a02060be9bb" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -33,6 +35,9 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
@@ -45,6 +50,7 @@
     <dismissed value="$PROJECT_DIR$/call-client/package.json" />
   </component>
   <component name="ProjectId" id="1accDTaNqJU6eVGQQyDWUKSseVx" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="autoscrollFromSource" value="true" />
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -60,12 +66,13 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="extract.method.default.visibility" value="private" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="settings.editor.selected.configurable" value="fileTemplates" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\IdeaProjects\call-parent" />
       <recent name="D:\IdeaProjects\call-parent\call-web\src\main\java\com\erp\call\web" />
       <recent name="D:\IdeaProjects\call-parent\call-web\src\main\resources" />
     </key>
@@ -141,6 +148,7 @@
       <workItem from="1588586150127" duration="3343000" />
       <workItem from="1588758041870" duration="216000" />
       <workItem from="1588758268590" duration="612000" />
+      <workItem from="1588759477355" duration="2047000" />
     </task>
     <servers />
   </component>
@@ -152,10 +160,18 @@
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state x="96" y="0" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1280.680@0.0.1280.680" timestamp="1587042639195" />
+    <state x="649" y="-756" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1588762948703">
+      <screen x="0" y="-1080" width="1920" height="1040" />
+    </state>
+    <state x="649" y="-756" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1588762948703" />
     <state x="443" y="26" key="#com.intellij.ide.util.MemberChooser" timestamp="1587648947538">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state x="443" y="26" key="#com.intellij.ide.util.MemberChooser/0.0.1280.680@0.0.1280.680" timestamp="1587648947538" />
+    <state x="523" y="-966" key="CommitChangelistDialog2" timestamp="1588763220272">
+      <screen x="0" y="-1080" width="1920" height="1040" />
+    </state>
+    <state x="523" y="-966" key="CommitChangelistDialog2/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1588763220272" />
     <state width="470" height="305" key="DebuggerActiveHint" timestamp="1588583649162">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
