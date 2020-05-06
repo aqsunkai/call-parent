@@ -168,15 +168,19 @@
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state x="443" y="26" key="#com.intellij.ide.util.MemberChooser/0.0.1280.680@0.0.1280.680" timestamp="1587648947538" />
-    <state x="523" y="-966" key="CommitChangelistDialog2" timestamp="1588763220272">
+    <state x="523" y="-966" key="CommitChangelistDialog2" timestamp="1588763242438">
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
-    <state x="523" y="-966" key="CommitChangelistDialog2/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1588763220272" />
+    <state x="523" y="-966" key="CommitChangelistDialog2/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1588763242438" />
     <state width="470" height="305" key="DebuggerActiveHint" timestamp="1588583649162">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state width="452" height="466" key="DebuggerActiveHint/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1587117910572" />
     <state width="470" height="305" key="DebuggerActiveHint/0.0.1280.680@0.0.1280.680" timestamp="1588583649162" />
+    <state x="440" y="-850" key="DiffContextDialog" timestamp="1588763232158">
+      <screen x="0" y="-1080" width="1920" height="1040" />
+    </state>
+    <state x="440" y="-850" key="DiffContextDialog/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1588763232158" />
     <state width="1879" height="245" key="GridCell.Tab.0.bottom" timestamp="1588758880183">
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
@@ -253,6 +257,10 @@
       <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state width="498" height="445" key="SwitcherDM/0.0.1280.680@0.0.1280.680" timestamp="1588587569650" />
+    <state x="552" y="-826" key="Vcs.Push.Dialog.v2" timestamp="1588763247255">
+      <screen x="0" y="-1080" width="1920" height="1040" />
+    </state>
+    <state x="552" y="-826" key="Vcs.Push.Dialog.v2/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1588763247255" />
     <state x="371" y="113" key="extract.method.dialog" timestamp="1587261517186">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
