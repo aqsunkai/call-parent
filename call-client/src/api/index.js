@@ -7,6 +7,13 @@ export function productSend (data) {
     data: data
   })
 }
+export function erpProductSend (data) {
+  return Axios({
+    url: '/api/erpProduct/send',
+    method: 'post',
+    data: data
+  })
+}
 export function productResult (data) {
   return Axios({
     url: `/api/product/result`,

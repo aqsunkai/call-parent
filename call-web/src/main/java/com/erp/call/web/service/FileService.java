@@ -5,6 +5,8 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,16 +20,21 @@ import java.util.Iterator;
 
 @Service
 public class FileService {
+    private Logger logger = LoggerFactory.getLogger(FileService.class);
 
     private final static String EXPORT_PATH = "D:/call/files/";
 
-    public String splitFile(MultipartFile file, Integer headerRowNum, Integer singleFileNum, String fileDate) {
+    public String splitFile(MultipartFile file, Integer headerRowNum, Integer singleFileNum, String sheetName, String fileDate) {
         try {
             String fileName = file.getOriginalFilename();
-            Workbook workbook = getWorkbook(file, fileName);
-            boolean xlsx = fileName.endsWith(".xlsx");
+            boolean xlsx = fileName.endsWith(".xlsx") || fileName.endsWith(".xlsm");
+            String suffix = fileName.substring(fileName.lastIndexOf("."));
+            Workbook workbook = getWorkbook(file, xlsx);
             fileName = fileName.substring(0, fileName.lastIndexOf("."));
-            Sheet oldSheet = workbook.getSheetAt(0);
+            Sheet oldSheet = workbook.getSheet(sheetName);
+            if (null == oldSheet) {
+                throw new RuntimeException(sheetName + "名称不存在，请检查！");
+            }
             int lastRow = oldSheet.getLastRowNum();
             int fileNum;
             if ((lastRow + 1 - headerRowNum) % singleFileNum == 0) {
@@ -70,7 +77,7 @@ public class FileService {
             for (int ii = 0; ii < workbooks.length; ii++) {
                 String nextDate = format.format(DateUtils.addDays(currentDate, ii));
                 String nextPath = EXPORT_PATH + nextDate;
-                String singleFileName = nextPath + "/" + fileName + "(" + nextDate + ")" + (xlsx ? ".xlsx" : ".xls");
+                String singleFileName = nextPath + "/" + fileName + "(" + nextDate + ")" + suffix;
                 File file1 = new File(singleFileName);
                 if (file1.exists()) {
                     throw new RuntimeException(singleFileName + "文件已存在，请手动删除！");
@@ -85,13 +92,14 @@ public class FileService {
 
             for (int ii = 0; ii < workbooks.length; ii++) {
                 String nextDate = format.format(DateUtils.addDays(currentDate, ii));
-                String singleFileName = EXPORT_PATH + nextDate + "/" + fileName + "(" + nextDate + ")" + (xlsx ? ".xlsx" : ".xls");
+                String singleFileName = EXPORT_PATH + nextDate + "/" + fileName + "(" + nextDate + ")" + suffix;
                 FileOutputStream fileOut = new FileOutputStream(singleFileName);
                 workbooks[ii].write(fileOut);
                 fileOut.flush();
                 fileOut.close();
             }
         } catch (Exception e) {
+            logger.error("拆分文件失败", e);
             throw new RuntimeException(e.getMessage());
         }
         return null;
@@ -122,9 +130,9 @@ public class FileService {
         }
     }
 
-    private Workbook getWorkbook(MultipartFile file, String fileName) throws IOException {
+    private Workbook getWorkbook(MultipartFile file, boolean xlsx) throws IOException {
         InputStream in = file.getInputStream();
-        if (fileName.endsWith(".xlsx")) {
+        if (xlsx) {
             return new XSSFWorkbook(in);
         } else {
             return new HSSFWorkbook(in);

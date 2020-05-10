@@ -1,5 +1,5 @@
 <template>
-<el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="130px" class="product-ruleForm" size="small" >
+<el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="130px" class="xiaomi-ruleForm" size="small" >
   <el-form-item label="产品名称" prop="type">
     <el-radio-group v-model="ruleForm.type" class="content_radio">
       <el-radio :label="0">使用图片名称</el-radio>
@@ -47,7 +47,7 @@
 </template>
 <script>
 import { Message } from 'element-ui'
-import { productSend, productResult } from '@/api'
+import { erpProductSend, productResult } from '@/api'
 export default {
   data () {
     return {
@@ -97,10 +97,9 @@ export default {
         })
         return
       }
-
       this.$refs[formName].validate(async (valid) => {
         if (valid) {
-          const res = await productSend(this.ruleForm)
+          const res = await erpProductSend(this.ruleForm)
           if (res.status) {
             this.dialogVisible = true
             this.running = true
@@ -133,7 +132,7 @@ export default {
 }
 </script>
 <style lang="scss">
-.product-ruleForm{
+.xiaomi-ruleForm{
   width: 800px;
   margin: 0 auto;
   .content_button{

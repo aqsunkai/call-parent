@@ -17,6 +17,11 @@ export default new Router({
           icon: 'el-icon-upload2',
           component: () => import('@/views/product_send')
         },
+        {path: '/xiaomiErp',
+          name: '小米erp',
+          icon: 'el-icon-upload2',
+          component: () => import('@/views/erp_product_send')
+        },
         {path: '/splitFile',
           name: '拆分文件',
           icon: 'el-icon-files',

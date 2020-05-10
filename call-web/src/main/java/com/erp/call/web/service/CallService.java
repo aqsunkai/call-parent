@@ -91,7 +91,7 @@ public class CallService {
                                 upload = false;
                                 break pro;
                             }
-                            TimeUnit.MILLISECONDS.sleep(200);
+                            TimeUnit.MILLISECONDS.sleep(500);
                         }
                     } else if (pageReq.getAttachProperty().equals(imageFile.getName())) {
                         File[] slaveFiles = imageFile.listFiles();
@@ -110,7 +110,7 @@ public class CallService {
                                 upload = false;
                                 break pro;
                             }
-                            TimeUnit.MILLISECONDS.sleep(200);
+                            TimeUnit.MILLISECONDS.sleep(500);
                         }
                     } else if (pageReq.getType() == 1 && pageReq.getProductNameFile().equals(imageFile.getName())) {
                         // 产品名称文件夹名称
@@ -151,7 +151,7 @@ public class CallService {
                         if (null == res || Boolean.TRUE.equals(res.getCheckFail())) {
                             failCount++;
                         }
-                        TimeUnit.MILLISECONDS.sleep(200);
+                        TimeUnit.MILLISECONDS.sleep(500);
                     }
                     if (failCount == 0) {
                         logger.info("文件夹名称：{}，创建产品成功", fileName);

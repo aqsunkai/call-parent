@@ -6,6 +6,9 @@
   <el-form-item label="拆分单个excel条数" prop="fileNum">
     <el-input v-model="ruleForm.fileNum"></el-input>
   </el-form-item>
+  <el-form-item label="sheet名称" prop="sheetName">
+    <el-input v-model="ruleForm.sheetName"></el-input>
+  </el-form-item>
   <el-form-item label="拆分开始日期" prop="fileDate">
     <el-input v-model="ruleForm.fileDate"></el-input>
   </el-form-item>
@@ -14,7 +17,7 @@
       ref="upload"
       :action="uploadUrl"
       :limit="1"
-       accept=".xlsx,.xls"
+       accept=".xlsx,.xls,.xlsm"
        :data="ruleForm"
        :on-success="handleSuccessUpload"
       :auto-upload="false">
@@ -41,6 +44,7 @@ export default {
       ruleForm: {
         headerRowNum: 3,
         fileNum: 200,
+        sheetName: 'Template',
         fileDate: ''
       },
       rules: {
@@ -49,6 +53,9 @@ export default {
         ],
         fileNum: [
           { required: true, message: '请输入单个excel条数', trigger: 'blur' }
+        ],
+        sheetName: [
+          { required: true, message: 'sheet名称', trigger: 'blur' }
         ],
         fileDate: [
           { required: true, message: '请输入拆分开始日期', trigger: 'blur' }
