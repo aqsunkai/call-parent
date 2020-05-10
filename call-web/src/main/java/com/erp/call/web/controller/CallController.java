@@ -70,7 +70,7 @@ public class CallController {
             return Result.error("填写产品&价格文件夹名");
         }
         pageReq.setCookie(pageReq.getCookie().trim());
-        callService.sendProduct(pageReq);
+        callService.sendErpProduct(pageReq);
         return Result.success(null);
     }
 

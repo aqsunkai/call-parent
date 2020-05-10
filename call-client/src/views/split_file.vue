@@ -7,7 +7,14 @@
     <el-input v-model="ruleForm.fileNum"></el-input>
   </el-form-item>
   <el-form-item label="sheet名称" prop="sheetName">
-    <el-input v-model="ruleForm.sheetName"></el-input>
+    <el-select v-model="ruleForm.sheetName" placeholder="请选择">
+    <el-option
+      v-for="item in options"
+      :key="item.value"
+      :label="item.label"
+      :value="item.value">
+    </el-option>
+  </el-select>
   </el-form-item>
   <el-form-item label="拆分开始日期" prop="fileDate">
     <el-input v-model="ruleForm.fileDate"></el-input>
@@ -28,7 +35,11 @@
   <el-form-item class="content_button" v-loading="loading">
     <el-button type="primary" @click="submitForm('ruleForm')">拆分文件</el-button>
   </el-form-item>
-</el-form>
+  <div>
+      <el-alert type = 'success' center show-icon effect="dark" v-show="showRes == 1" :title="result"></el-alert>
+      <el-alert type = 'error' center show-icon effect="dark" v-show="showRes == 2" :title="result"></el-alert>
+  </div>
+  </el-form>
 </template>
 <script>
 import { Message } from 'element-ui'
@@ -39,12 +50,30 @@ const baseURL = env.baseURL
 export default {
   data () {
     return {
+      options: [{
+        value: 'Template',
+        label: '英国-Template'
+      }, {
+        value: 'Modèle',
+        label: '法国-Modèle'
+      }, {
+        value: 'Vorlage',
+        label: '德国-Vorlage'
+      }, {
+        value: 'Modello',
+        label: '意大利-Modello'
+      }, {
+        value: 'Plantilla',
+        label: '西班牙-Plantilla'
+      }],
+      showRes: 0,
+      result: '',
       uploadUrl: '',
       loading: false,
       ruleForm: {
         headerRowNum: 3,
         fileNum: 200,
-        sheetName: 'Template',
+        sheetName: '',
         fileDate: ''
       },
       rules: {
@@ -69,6 +98,8 @@ export default {
   },
   methods: {
     submitForm (formName) {
+      this.result = ''
+      this.showRes = 0
       this.$refs[formName].validate(async (valid) => {
         if (valid) {
           this.$refs.upload.submit()
@@ -80,15 +111,19 @@ export default {
     },
     handleSuccessUpload (res) {
       if (res.status) {
+        this.result = '拆分成功！'
+        this.showRes = 1
         Message({
-          message: '拆分成功！',
+          message: this.result,
           type: 'success',
           duration: 3 * 1000,
           showClose: true
         })
       } else {
+        this.result = res.message
+        this.showRes = 2
         Message({
-          message: res.message,
+          message: this.result,
           type: 'error',
           duration: 3 * 1000,
           showClose: true

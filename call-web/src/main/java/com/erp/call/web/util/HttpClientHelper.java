@@ -5,6 +5,7 @@ import com.alibaba.fastjson.util.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
@@ -64,7 +65,8 @@ public class HttpClientHelper {
 
     public <T> T put(String url, Object dto, Map<String, String> headers, Class<T> clazz) {
         try {
-            String responseJson = execute(url, JSON.toJSONString(dto), headers);
+            HttpPut httpput = new HttpPut(url);
+            String responseJson = execute(url, JSON.toJSONString(dto), headers, httpput);
             return JSON.parseObject(responseJson, clazz);
         } catch (Exception e) {
             logger.error("httpClient put error ", e);
@@ -72,13 +74,23 @@ public class HttpClientHelper {
         return null;
     }
 
-    private String execute(String url, String jsonStr, Map<String, String> headers) throws IOException {
-        HttpPut httpput = new HttpPut(url);
+    public <T> T post(String url, Object dto, Map<String, String> headers, Class<T> clazz) {
+        try {
+            HttpPost httpput = new HttpPost(url);
+            String responseJson = execute(url, JSON.toJSONString(dto), headers, httpput);
+            return JSON.parseObject(responseJson, clazz);
+        } catch (Exception e) {
+            logger.error("httpClient put error ", e);
+        }
+        return null;
+    }
+
+    private String execute(String url, String jsonStr, Map<String, String> headers, HttpEntityEnclosingRequestBase httpRequest) throws IOException {
         //设置header
-        httpput.setHeader("Content-type", "application/json");
+        httpRequest.setHeader("Content-type", "application/json");
         if (headers != null && headers.size() > 0) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
-                httpput.addHeader(entry.getKey(), entry.getValue());
+                httpRequest.addHeader(entry.getKey(), entry.getValue());
             }
         }
 
@@ -86,14 +98,14 @@ public class HttpClientHelper {
                 .setConnectionRequestTimeout(CONNECTION_REQUEST_TIMEOUT)
                 .setConnectTimeout(CONNECT_TIMEOUT)
                 .setSocketTimeout(SOCKET_TIMEOUT).build();
-        httpput.setConfig(config);
+        httpRequest.setConfig(config);
 
         StringEntity se = new StringEntity(jsonStr, CHAR_SET);
-        httpput.setEntity(se);
+        httpRequest.setEntity(se);
 
         HttpResponse response = null;
         try {
-            response = httpClient.execute(httpput);
+            response = httpClient.execute(httpRequest);
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
                 return EntityUtils.toString(response.getEntity(), CHAR_SET);
             }

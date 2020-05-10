@@ -1,7 +1,9 @@
 package com.erp.call.web.service;
 
+import com.alibaba.fastjson.JSON;
 import com.erp.call.web.dto.*;
 import com.erp.call.web.util.HttpClientHelper;
+import com.erp.call.web.util.IDGeneratorUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
@@ -23,13 +25,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static com.erp.call.web.constant.HttpConstant.PRODUCT_URL;
-import static com.erp.call.web.constant.HttpConstant.UPLOAD_URL;
+import static com.erp.call.web.constant.HttpConstant.*;
 
 @Service
 public class CallService {
 
     private Logger logger = LoggerFactory.getLogger(CallService.class);
+
+    ExecutorService executors = Executors.newCachedThreadPool();
 
     private volatile Map<String, Boolean> runningMap = new ConcurrentHashMap<>();
 
@@ -48,6 +51,16 @@ public class CallService {
     }
 
     public void sendProduct(PageReq pageReq) {
+        File file = checkFilePath(pageReq);
+        executors.execute(() -> createProduct(pageReq, file));
+    }
+
+    public void sendErpProduct(PageReq pageReq) {
+        File file = checkFilePath(pageReq);
+        executors.execute(() -> createErpProduct(pageReq, file));
+    }
+
+    private File checkFilePath(PageReq pageReq) {
         File file = new File(pageReq.getFilePath());
         if (!file.exists()) {
             throw new RuntimeException("文件夹地址不正确！");
@@ -58,9 +71,7 @@ public class CallService {
         runningMap.put(pageReq.getFilePath(), true);
         FAIL_NAME.remove(pageReq.getFilePath());
         UPLOAD_NAME.remove(pageReq.getFilePath());
-        ExecutorService executors = Executors.newSingleThreadExecutor();
-        executors.execute(() -> createProduct(pageReq, file));
-        executors.shutdown();
+        return file;
     }
 
     private void createProduct(PageReq pageReq, File file) {
@@ -188,6 +199,143 @@ public class CallService {
         }
     }
 
+    private void createErpProduct(PageReq pageReq, File file) {
+        try {
+            File[] files = file.listFiles();
+            for (File productFile : files) {
+                String fileName = productFile.getName();
+                String productName = null;
+                String price = "0";
+                File[] imageFiles = productFile.listFiles();
+                Map<String, String> masterSize = new HashMap<>();
+                Map<String, String> masterUrl = new HashMap<>();
+                Map<String, String> masterName = new HashMap<>();
+                String firstSlaveMd5 = null;
+                boolean upload = true;
+                File[] slaveFiles = null;
+                pro:
+                for (File imageFile : imageFiles) {
+                    if (pageReq.getProperty().equals(imageFile.getName())) {
+                        File[] masterFiles = imageFile.listFiles();
+                        if (null == masterFiles || masterFiles.length == 0) {
+                            continue;
+                        }
+                        for (File masterFile : masterFiles) {
+                            // 上传属性图图片
+                            ErpUploadRes res = httpClientHelper.postFile(ERP_UPLOAD_URL, masterFile, getErpRequestHeader(pageReq.getCookie(), true), ErpUploadRes.class);
+                            if (null != res && Boolean.TRUE.equals(res.getState())) {
+                                masterName.put(res.getData().getId(), masterFile.getName().substring(0, masterFile.getName().lastIndexOf(".")));
+                                masterUrl.put(res.getData().getId(), res.getData().getUrl());
+                                masterSize.put(res.getData().getId(), res.getData().getSize().toString());
+                            } else {
+                                upload = false;
+                                break pro;
+                            }
+                            TimeUnit.MILLISECONDS.sleep(500);
+                        }
+                    } else if (pageReq.getAttachProperty().equals(imageFile.getName())) {
+                        slaveFiles = imageFile.listFiles();
+                    } else if (pageReq.getType() == 1 && pageReq.getProductNameFile().equals(imageFile.getName())) {
+                        // 产品名称文件夹名称
+                        String txt = txt2String(fileName, imageFile);
+                        if (StringUtils.isNotEmpty(txt)) {
+                            if (txt.contains("@")) {
+                                price = txt.split("@")[0];
+                                productName = txt.split("@")[1];
+                                productName = productName.split("- AliExpress")[0];
+                                productName = productName.substring(0, productName.length() - 5);
+                            } else {
+                                productName = txt.split("- AliExpress")[0];
+                                productName = productName.substring(0, productName.length() - 5);
+                            }
+                        }
+                    }
+                }
+                if (upload) {
+                    if (pageReq.getType() == 1 && StringUtils.isEmpty(productName)) {
+                        logger.error("文件夹名称：{}，产品名称不存在，请自行检查", fileName);
+                        List<String> uploads = FAIL_NAME.get(pageReq.getFilePath());
+                        if (CollectionUtils.isEmpty(uploads)) {
+                            uploads = Lists.newArrayList();
+                        }
+                        uploads.add(fileName);
+                        FAIL_NAME.put(pageReq.getFilePath(), uploads);
+                        continue;
+                    }
+                    int failCount = 0;
+                    for (Map.Entry<String, String> master : masterName.entrySet()) {
+                        boolean uploadSlave = true;
+                        Map<String, String> slaveSize = new HashMap<>();
+                        Map<String, String> slaveUrl = new HashMap<>();
+                        if (null != slaveFiles && slaveFiles.length > 0) {
+                            // 上传主图图片
+                            for (File slaveFile : slaveFiles) {
+                                // 上传属性图图片
+                                ErpUploadRes res = httpClientHelper.postFile(ERP_UPLOAD_URL, slaveFile, getErpRequestHeader(pageReq.getCookie(), true), ErpUploadRes.class);
+                                if (null != res && Boolean.TRUE.equals(res.getState())) {
+                                    slaveUrl.put(res.getData().getId(), res.getData().getUrl());
+                                    slaveSize.put(res.getData().getId(), res.getData().getSize().toString());
+                                } else {
+                                    uploadSlave = false;
+                                    break;
+                                }
+                                TimeUnit.MILLISECONDS.sleep(500);
+                            }
+                        }
+                        if (!uploadSlave) {
+                            logger.info("文件夹名称：{}，上传主图图片失败，请自行检查", fileName);
+                            List<String> uploads = FAIL_NAME.get(pageReq.getFilePath());
+                            if (CollectionUtils.isEmpty(uploads)) {
+                                uploads = Lists.newArrayList();
+                            }
+                            uploads.add(fileName);
+                            FAIL_NAME.put(pageReq.getFilePath(), uploads);
+                            continue;
+                        }
+                        String product = pageReq.getType() == 1 ? productName : master.getValue();
+                        ErpProductRes res = httpClientHelper.post(ERP_PRODUCT_URL, getErpProductReq(product, price, master.getKey(),
+                                masterUrl.get(master.getKey()), masterSize.get(master.getKey()),
+                                slaveUrl, slaveSize), getErpRequestHeader(pageReq.getCookie(), false), ErpProductRes.class);
+                        if (null == res || res.getCode() != 1) {
+                            failCount++;
+                        }
+                        TimeUnit.MILLISECONDS.sleep(500);
+                    }
+                    if (failCount == 0) {
+                        logger.info("文件夹名称：{}，创建产品成功", fileName);
+//                        productFile.delete();
+                        List<String> uploads = UPLOAD_NAME.get(pageReq.getFilePath());
+                        if (CollectionUtils.isEmpty(uploads)) {
+                            uploads = Lists.newArrayList();
+                        }
+                        uploads.add(fileName);
+                        UPLOAD_NAME.put(pageReq.getFilePath(), uploads);
+                    } else {
+                        logger.info("文件夹名称：{}，创建产品失败，请自行检查", fileName);
+                        List<String> uploads = FAIL_NAME.get(pageReq.getFilePath());
+                        if (CollectionUtils.isEmpty(uploads)) {
+                            uploads = Lists.newArrayList();
+                        }
+                        uploads.add(fileName);
+                        FAIL_NAME.put(pageReq.getFilePath(), uploads);
+                    }
+                } else {
+                    logger.info("文件夹名称：{}，上传属性图图片失败，请自行检查", fileName);
+                    List<String> uploads = FAIL_NAME.get(pageReq.getFilePath());
+                    if (CollectionUtils.isEmpty(uploads)) {
+                        uploads = Lists.newArrayList();
+                    }
+                    uploads.add(fileName);
+                    FAIL_NAME.put(pageReq.getFilePath(), uploads);
+                }
+            }
+            runningMap.put(pageReq.getFilePath(), false);
+        } catch (Exception e) {
+            logger.error("异步创建产品失败", e);
+            runningMap.put(pageReq.getFilePath(), false);
+        }
+    }
+
     private String txt2String(String fileName, File file) {
         StringBuilder result = new StringBuilder();
         BufferedReader br = null;
@@ -245,13 +393,67 @@ public class CallService {
 
     private Map<String, String> getRequestHeader(String cookie) {
         Map<String, String> headers = Maps.newHashMap();
-//        headers.put("Cookie", "_ati=4439240839304; access_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX21vYmlsZV9waG9uZSI6IjE3NTIxMDYyOTQyIiwidXNlcl9pZCI6MjQyNzU4LCJ1c2VyX25hbWUiOiJuaXVrYW5namllIiwic2NvcGUiOlsib3BlbmlkIl0sInVzZXJfbW9iaWxlX3Bob25lX3ZlcmlmaWVkIjpmYWxzZSwidXNlcl9uaWNrX25hbWUiOiLlsI_nu4Qt54mb5bq35p2wIiwiZXhwIjoxNTg2OTkzODAyLCJpYXQiOjE1ODY5NTA2MDIsImF1dGhvcml0aWVzIjpbIlJPTEVfR01QX0VNUExPWUVFIiwiUk9MRV9HTVBfU0FMRVNNQU5fSU5ORVIiXSwianRpIjoiMWQzMDZlNDQtNTBhNS00ZmJhLWI0ZTAtNWE1YWY4ZGQyZDhiIiwiY2xpZW50X2lkIjoid2ViX2FwcCJ9.InY1FjN4YfFPW5UmJNp29AH6EFwB6bTwVuj0hwW6V-QW8CHoDZRb9JceF4dEqB52i2YWpSOOjlsHWUsJ_xWixP6PP8dVSrUwHCUpkN5rDxpstdII5zSM8TcqQPCaAQLEwOBHlrkOL8Nxt_Gw42jV55Th_y9IsjMwm3ZcKxBlLZvFzm2vCIfEkvY8_bCg47EzaHUoBfkcriFgGd1ma-Gc3_BpSl9u-www3eFi47jJx3yQFAOklw4UNGog05WZsJ9HUDOZgUtjfNLweAoNoSRijYxrlWiSibaMyzADAtfR1EEiAdbp3x8h2-3dAUuWCanHydiKqGaBkQUQx_fGCsQ6dw; refresh_token=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX21vYmlsZV9waG9uZSI6IjE3NTIxMDYyOTQyIiwidXNlcl9pZCI6MjQyNzU4LCJ1c2VyX25hbWUiOiJuaXVrYW5namllIiwic2NvcGUiOlsib3BlbmlkIl0sInVzZXJfbW9iaWxlX3Bob25lX3ZlcmlmaWVkIjpmYWxzZSwiYXRpIjoiMWQzMDZlNDQtNTBhNS00ZmJhLWI0ZTAtNWE1YWY4ZGQyZDhiIiwidXNlcl9uaWNrX25hbWUiOiLlsI_nu4Qt54mb5bq35p2wIiwiZXhwIjoxNTg5NTQyNjAyLCJpYXQiOjE1ODY5NTA2MDIsImF1dGhvcml0aWVzIjpbIlJPTEVfR01QX0VNUExPWUVFIiwiUk9MRV9HTVBfU0FMRVNNQU5fSU5ORVIiXSwianRpIjoiYzJlOGE5YzItY2VjMy00ODIzLTgxYTctYjhkZmI3ZGQyZTliIiwiY2xpZW50X2lkIjoid2ViX2FwcCJ9.Xo0BtWHe6UizUDeDkcye-vRzcYZa5LUZ6fhgyVFYMDDvy285rOR8zpOmU-FcbmHhPlBBr3owEL7daMfuXROGnIZTBe90-NeyEJoFHXw2rd-3_GEopoyLgt0pFg_ikelwpvugKgW4I1JVxOVi29uuq5vr98bjYlqKO3i_lTLk7U_PRhSeE7v0FPFLwGnxiaGBSbp47uUSILyqteUPiWv-61bSy9re_auz8Iwy3t068Y4wBlrOclguhq9vytgHXuMiDqCUwDJ5wWxm5gHEfViubfHZSyJND6XCn46c5Hel8dwMrG34ykpzEZbW6vaDj_eF7dOUtBo2Wc_WgA-wzI4dBA");
-//        headers.put("Authorization","eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX21vYmlsZV9waG9uZSI6IjE3NTIxMDYyOTQyIiwidXNlcl9pZCI6MjQyNzU4LCJ1c2VyX25hbWUiOiJuaXVrYW5namllIiwic2NvcGUiOlsib3BlbmlkIl0sInVzZXJfbW9iaWxlX3Bob25lX3ZlcmlmaWVkIjpmYWxzZSwidXNlcl9uaWNrX25hbWUiOiLlsI_nu4Qt54mb5bq35p2wIiwiZXhwIjoxNTg2OTkzODAyLCJpYXQiOjE1ODY5NTA2MDIsImF1dGhvcml0aWVzIjpbIlJPTEVfR01QX0VNUExPWUVFIiwiUk9MRV9HTVBfU0FMRVNNQU5fSU5ORVIiXSwianRpIjoiMWQzMDZlNDQtNTBhNS00ZmJhLWI0ZTAtNWE1YWY4ZGQyZDhiIiwiY2xpZW50X2lkIjoid2ViX2FwcCJ9.InY1FjN4YfFPW5UmJNp29AH6EFwB6bTwVuj0hwW6V-QW8CHoDZRb9JceF4dEqB52i2YWpSOOjlsHWUsJ_xWixP6PP8dVSrUwHCUpkN5rDxpstdII5zSM8TcqQPCaAQLEwOBHlrkOL8Nxt_Gw42jV55Th_y9IsjMwm3ZcKxBlLZvFzm2vCIfEkvY8_bCg47EzaHUoBfkcriFgGd1ma-Gc3_BpSl9u-www3eFi47jJx3yQFAOklw4UNGog05WZsJ9HUDOZgUtjfNLweAoNoSRijYxrlWiSibaMyzADAtfR1EEiAdbp3x8h2-3dAUuWCanHydiKqGaBkQUQx_fGCsQ6dw");
         headers.put("Cookie", cookie);
         headers.put("Host", "erp.fjlonfenner.com");
         headers.put("Origin", "http://erp.fjlonfenner.com");
         headers.put("Referer", "http://erp.fjlonfenner.com/gmp/");
         headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36");
+        return headers;
+    }
+
+    private ErpProductReq getErpProductReq(String product, String price, String masterId, String masterUrl, String masterSize, Map<String, String> slaveUrl, Map<String, String> slaveSize) {
+        ErpProductReq req = new ErpProductReq();
+        req.setProname(product);
+        req.setSkucode(IDGeneratorUtil.generateStringId());
+        req.setRepeat("2");
+        req.setPrice(price);
+        req.setSaleprice(price);
+        req.setCost("0");
+        req.setCoin_sign("CNY");
+        req.setSkucode("");
+        req.setIs_fanyi("1");
+        req.setKeywords(Lists.newArrayList("").toArray(new String[0]));
+        req.setKucun("50");
+        Extend extend = new Extend();
+        extend.setBattery("2");
+        extend.setLength("0");
+        extend.setWeight("0");
+        extend.setWidth("0");
+        extend.setHeight("0");
+        req.setExtend(extend);
+        Map<String, Object> mainImgs = Maps.newHashMap();
+        mainImgs.put("main", masterId);
+        mainImgs.put("sample", "");
+        List<String> slaveIds = Lists.newArrayListWithCapacity(slaveSize.size());
+        slaveSize.keySet().forEach(slaveIds::add);
+        mainImgs.put("affiliate", slaveIds.toArray(new String[0]));
+        req.setMain_imgs(mainImgs);
+        Map<String, String> allImgs = Maps.newHashMap();
+        allImgs.put(masterId, masterUrl);
+        allImgs.putAll(slaveUrl);
+        req.setAll_imgs(allImgs);
+        req.setShow_img(masterUrl);
+        Map<String, String> imageInfo = Maps.newHashMap();
+        imageInfo.put(masterId, masterSize);
+        imageInfo.putAll(slaveSize);
+        req.setImage_info(imageInfo);
+        System.out.println(JSON.toJSONString(req));
+        return req;
+    }
+
+    private Map<String, String> getErpRequestHeader(String cookie, boolean flag) {
+        Map<String, String> headers = Maps.newHashMap();
+        headers.put("Cookie", cookie);
+        if (flag) {
+            headers.put("Content-Type", "multipart/form-data; boundary=----WebKitFormBoundarygkZmxxSNB9uvTRk9");
+        } else {
+            headers.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+        }
+        headers.put("Host", "erp2.miwaimao.com");
+        headers.put("Origin", "http://erp2.miwaimao.com");
+        headers.put("Referer", "http://erp2.miwaimao.com/admin/product/add.html");
+        headers.put("X-Requested-With", "XMLHttpRequest");
+        headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36");
         return headers;
     }
 
