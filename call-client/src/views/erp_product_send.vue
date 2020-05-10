@@ -19,7 +19,7 @@
     <el-input v-model="ruleForm.productNameFile"></el-input>
   </el-form-item>
   <el-form-item label="cookie" prop="cookie">
-    <el-input type="textarea" rows="12" v-model="ruleForm.cookie"></el-input>
+    <el-input type="textarea" rows="2" v-model="ruleForm.cookie"></el-input>
   </el-form-item>
   <el-form-item class="content_button">
     <el-button type="primary" @click="submitForm('ruleForm')">创建产品</el-button>

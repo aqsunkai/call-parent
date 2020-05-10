@@ -53,9 +53,9 @@ public class HttpClientHelper {
                 .build();
     }
 
-    public <T> T postFile(String url, File file, Map<String, String> headers, Class<T> clazz) {
+    public <T> T postFile(String url, File file, String uploadName, Map<String, String> headers, Class<T> clazz) {
         try {
-            String responseJson = executeFile(url, file, headers);
+            String responseJson = executeFile(url, file, headers, uploadName);
             return JSON.parseObject(responseJson, clazz);
         } catch (Exception e) {
             logger.error("httpClient post file error ", e);
@@ -121,7 +121,7 @@ public class HttpClientHelper {
     /**
      * 发送 http post 请求，支持文件上传
      */
-    public String executeFile(String url, File file, Map<String, String> headers) throws IOException {
+    public String executeFile(String url, File file, Map<String, String> headers, String uploadName) throws IOException {
         HttpPost httpost = new HttpPost(url);
         //设置header
         if (headers != null && headers.size() > 0) {
@@ -141,7 +141,7 @@ public class HttpClientHelper {
         mEntityBuilder.setCharset(Charset.forName(CHAR_SET));
 
         // 二进制参数
-        mEntityBuilder.addBinaryBody("file", file);
+        mEntityBuilder.addBinaryBody(uploadName, file);
         httpost.setEntity(mEntityBuilder.build());
 
         HttpResponse response = null;

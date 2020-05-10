@@ -47,7 +47,7 @@ public class CallService {
         if (!file.exists()) {
             return null;
         }
-        return httpClientHelper.postFile(UPLOAD_URL, file, getRequestHeader(pageReq.getCookie()), UploadRes.class);
+        return httpClientHelper.postFile(UPLOAD_URL, file, "file", getRequestHeader(pageReq.getCookie()), UploadRes.class);
     }
 
     public void sendProduct(PageReq pageReq) {
@@ -95,7 +95,7 @@ public class CallService {
                         }
                         for (File masterFile : masterFiles) {
                             // 上传属性图图片
-                            UploadRes res = httpClientHelper.postFile(UPLOAD_URL, masterFile, getRequestHeader(pageReq.getCookie()), UploadRes.class);
+                            UploadRes res = httpClientHelper.postFile(UPLOAD_URL, masterFile, "file", getRequestHeader(pageReq.getCookie()), UploadRes.class);
                             if (null != res && Boolean.TRUE.equals(res.getRet())) {
                                 masterMd5.put(res.getInfo().getMd5(), masterFile.getName().substring(0, masterFile.getName().lastIndexOf(".")));
                             } else {
@@ -111,7 +111,7 @@ public class CallService {
                         }
                         for (File slaveFile : slaveFiles) {
                             // 上传主图图片
-                            UploadRes res = httpClientHelper.postFile(UPLOAD_URL, slaveFile, getRequestHeader(pageReq.getCookie()), UploadRes.class);
+                            UploadRes res = httpClientHelper.postFile(UPLOAD_URL, slaveFile, "file", getRequestHeader(pageReq.getCookie()), UploadRes.class);
                             if (null != res && Boolean.TRUE.equals(res.getRet())) {
                                 slaveMd5.put(res.getInfo().getMd5(), slaveFile.getName().substring(0, slaveFile.getName().lastIndexOf(".")));
                                 if (StringUtils.isEmpty(firstSlaveMd5)) {
@@ -222,7 +222,7 @@ public class CallService {
                         }
                         for (File masterFile : masterFiles) {
                             // 上传属性图图片
-                            ErpUploadRes res = httpClientHelper.postFile(ERP_UPLOAD_URL, masterFile, getErpRequestHeader(pageReq.getCookie(), true), ErpUploadRes.class);
+                            ErpUploadRes res = httpClientHelper.postFile(ERP_UPLOAD_URL, masterFile, "imgs", getErpRequestHeader(pageReq.getCookie(), true), ErpUploadRes.class);
                             if (null != res && Boolean.TRUE.equals(res.getState())) {
                                 masterName.put(res.getData().getId(), masterFile.getName().substring(0, masterFile.getName().lastIndexOf(".")));
                                 masterUrl.put(res.getData().getId(), res.getData().getUrl());
@@ -271,7 +271,7 @@ public class CallService {
                             // 上传主图图片
                             for (File slaveFile : slaveFiles) {
                                 // 上传属性图图片
-                                ErpUploadRes res = httpClientHelper.postFile(ERP_UPLOAD_URL, slaveFile, getErpRequestHeader(pageReq.getCookie(), true), ErpUploadRes.class);
+                                ErpUploadRes res = httpClientHelper.postFile(ERP_UPLOAD_URL, slaveFile, "imgs", getErpRequestHeader(pageReq.getCookie(), true), ErpUploadRes.class);
                                 if (null != res && Boolean.TRUE.equals(res.getState())) {
                                     slaveUrl.put(res.getData().getId(), res.getData().getUrl());
                                     slaveSize.put(res.getData().getId(), res.getData().getSize().toString());
