@@ -18,7 +18,7 @@
   <el-form-item label="产品&价格文件名" prop="productNameFile">
     <el-input v-model="ruleForm.productNameFile"></el-input>
   </el-form-item>
-  <el-form-item label="cookie" prop="cookie">
+  <el-form-item label="Authorization" prop="cookie">
     <el-input type="textarea" rows="12" v-model="ruleForm.cookie"></el-input>
   </el-form-item>
   <el-form-item class="content_button">
@@ -26,7 +26,7 @@
     <el-button  @click="resetForm('ruleForm')">重置</el-button>
   </el-form-item>
   <el-dialog
-  title="正在慢慢刷新创建的产品"
+  title="正在刷新创建的产品"
   :visible.sync="dialogVisible"
   width="40%" center>
   <p v-if="running" style="color:#409EFF;text-align:center">正在创建</p>

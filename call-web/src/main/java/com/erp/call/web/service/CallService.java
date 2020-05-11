@@ -42,6 +42,9 @@ public class CallService {
     @Autowired
     private HttpClientHelper httpClientHelper;
 
+    @Autowired
+    private IDGeneratorUtil idGeneratorUtil;
+
     public UploadRes sendImage(PageReq pageReq) {
         File file = new File(pageReq.getFilePath());
         if (!file.exists()) {
@@ -102,7 +105,7 @@ public class CallService {
                                 upload = false;
                                 break pro;
                             }
-                            TimeUnit.MILLISECONDS.sleep(500);
+                            TimeUnit.SECONDS.sleep(1);
                         }
                     } else if (pageReq.getAttachProperty().equals(imageFile.getName())) {
                         File[] slaveFiles = imageFile.listFiles();
@@ -121,7 +124,7 @@ public class CallService {
                                 upload = false;
                                 break pro;
                             }
-                            TimeUnit.MILLISECONDS.sleep(500);
+                            TimeUnit.SECONDS.sleep(1);
                         }
                     } else if (pageReq.getType() == 1 && pageReq.getProductNameFile().equals(imageFile.getName())) {
                         // 产品名称文件夹名称
@@ -162,7 +165,7 @@ public class CallService {
                         if (null == res || Boolean.TRUE.equals(res.getCheckFail())) {
                             failCount++;
                         }
-                        TimeUnit.MILLISECONDS.sleep(500);
+                        TimeUnit.SECONDS.sleep(1);
                     }
                     if (failCount == 0) {
                         logger.info("文件夹名称：{}，创建产品成功", fileName);
@@ -228,10 +231,13 @@ public class CallService {
                                 masterUrl.put(res.getData().getId(), res.getData().getUrl());
                                 masterSize.put(res.getData().getId(), res.getData().getSize().toString());
                             } else {
+                                if (null != res) {
+                                    logger.warn(pageReq.getProperty() + ": " + res.getMsg());
+                                }
                                 upload = false;
                                 break pro;
                             }
-                            TimeUnit.MILLISECONDS.sleep(500);
+                            TimeUnit.SECONDS.sleep(1);
                         }
                     } else if (pageReq.getAttachProperty().equals(imageFile.getName())) {
                         slaveFiles = imageFile.listFiles();
@@ -276,10 +282,13 @@ public class CallService {
                                     slaveUrl.put(res.getData().getId(), res.getData().getUrl());
                                     slaveSize.put(res.getData().getId(), res.getData().getSize().toString());
                                 } else {
+                                    if (null != res) {
+                                        logger.warn(pageReq.getAttachProperty() + ": " + res.getMsg());
+                                    }
                                     uploadSlave = false;
                                     break;
                                 }
-                                TimeUnit.MILLISECONDS.sleep(500);
+                                TimeUnit.SECONDS.sleep(1);
                             }
                         }
                         if (!uploadSlave) {
@@ -293,13 +302,16 @@ public class CallService {
                             continue;
                         }
                         String product = pageReq.getType() == 1 ? productName : master.getValue();
-                        ErpProductRes res = httpClientHelper.post(ERP_PRODUCT_URL, getErpProductReq(product, price, master.getKey(),
+                        ErpProductRes res = httpClientHelper.postFormData(ERP_PRODUCT_URL, getErpProductReq(product, price, master.getKey(),
                                 masterUrl.get(master.getKey()), masterSize.get(master.getKey()),
                                 slaveUrl, slaveSize), getErpRequestHeader(pageReq.getCookie(), false), ErpProductRes.class);
                         if (null == res || res.getCode() != 1) {
                             failCount++;
+                            if (null != res) {
+                                logger.warn(fileName + "-" + product + ": " + res.getMsg());
+                            }
                         }
-                        TimeUnit.MILLISECONDS.sleep(500);
+                        TimeUnit.SECONDS.sleep(1);
                     }
                     if (failCount == 0) {
                         logger.info("文件夹名称：{}，创建产品成功", fileName);
@@ -393,10 +405,11 @@ public class CallService {
 
     private Map<String, String> getRequestHeader(String cookie) {
         Map<String, String> headers = Maps.newHashMap();
-        headers.put("Cookie", cookie);
+        headers.put("Authorization", cookie);
         headers.put("Host", "erp.fjlonfenner.com");
         headers.put("Origin", "http://erp.fjlonfenner.com");
         headers.put("Referer", "http://erp.fjlonfenner.com/gmp/");
+        headers.put("X-Requested-With", "XMLHttpRequest");
         headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36");
         return headers;
     }
@@ -404,28 +417,49 @@ public class CallService {
     private ErpProductReq getErpProductReq(String product, String price, String masterId, String masterUrl, String masterSize, Map<String, String> slaveUrl, Map<String, String> slaveSize) {
         ErpProductReq req = new ErpProductReq();
         req.setProname(product);
-        req.setSkucode(IDGeneratorUtil.generateStringId());
+        req.setSkucode(idGeneratorUtil.snowflakeId());
         req.setRepeat("2");
+        req.setBrand("");
         req.setPrice(price);
         req.setSaleprice(price);
         req.setCost("0");
+        req.setCoin("");
         req.setCoin_sign("CNY");
-        req.setSkucode("");
         req.setIs_fanyi("1");
+        req.setKeywordsId("");
         req.setKeywords(Lists.newArrayList("").toArray(new String[0]));
+        req.setSketch(Lists.newArrayList("").toArray(new String[0]));
+        req.setDes("");
         req.setKucun("50");
+        req.setFromurl("");
+        req.setUpc_ean("");
+        req.setUpc_ean_type("null");
+        req.setCategory_id("");
+        req.setCategory("");
         Extend extend = new Extend();
         extend.setBattery("2");
         extend.setLength("0");
         extend.setWeight("0");
         extend.setWidth("0");
         extend.setHeight("0");
+        extend.setColor("");
+        extend.setSize("");
+        extend.setOrigin("");
+        extend.setBrand("");
+        extend.setFacturer("");
+        extend.setNumber("");
+        extend.setMaterial("");
+        extend.setGem("");
+        extend.setMetal("");
+//        extend.setPackage("");
+        extend.setProduced("");
+        extend.setValidity("");
         req.setExtend(extend);
         Map<String, Object> mainImgs = Maps.newHashMap();
         mainImgs.put("main", masterId);
         mainImgs.put("sample", "");
         List<String> slaveIds = Lists.newArrayListWithCapacity(slaveSize.size());
-        slaveSize.keySet().forEach(slaveIds::add);
+        slaveIds.addAll(slaveSize.keySet());
         mainImgs.put("affiliate", slaveIds.toArray(new String[0]));
         req.setMain_imgs(mainImgs);
         Map<String, String> allImgs = Maps.newHashMap();
@@ -437,18 +471,18 @@ public class CallService {
         imageInfo.put(masterId, masterSize);
         imageInfo.putAll(slaveSize);
         req.setImage_info(imageInfo);
-        System.out.println(JSON.toJSONString(req));
         return req;
     }
 
+    /**
+     * @param flag false为上传产品，true为上传图片
+     */
     private Map<String, String> getErpRequestHeader(String cookie, boolean flag) {
         Map<String, String> headers = Maps.newHashMap();
-        headers.put("Cookie", cookie);
-        if (flag) {
-            headers.put("Content-Type", "multipart/form-data; boundary=----WebKitFormBoundarygkZmxxSNB9uvTRk9");
-        } else {
+        if (!flag) {
             headers.put("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
         }
+        headers.put("Cookie", cookie);
         headers.put("Host", "erp2.miwaimao.com");
         headers.put("Origin", "http://erp2.miwaimao.com");
         headers.put("Referer", "http://erp2.miwaimao.com/admin/product/add.html");

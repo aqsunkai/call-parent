@@ -2,9 +2,12 @@ package com.erp.call.web.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.util.IOUtils;
+import com.erp.call.web.enums.PictureContentType;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -14,6 +17,7 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +28,8 @@ import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -76,8 +82,8 @@ public class HttpClientHelper {
 
     public <T> T post(String url, Object dto, Map<String, String> headers, Class<T> clazz) {
         try {
-            HttpPost httpput = new HttpPost(url);
-            String responseJson = execute(url, JSON.toJSONString(dto), headers, httpput);
+            HttpPost httppost = new HttpPost(url);
+            String responseJson = execute(url, JSON.toJSONString(dto), headers, httppost);
             return JSON.parseObject(responseJson, clazz);
         } catch (Exception e) {
             logger.error("httpClient put error ", e);
@@ -114,7 +120,7 @@ public class HttpClientHelper {
                 IOUtils.close(response.getEntity().getContent());
             }
         }
-        logger.warn("request is failure,url:{},body:{},statusCode:{}", url, jsonStr, response.getStatusLine().getStatusCode());
+        logger.warn("request is failure,url:{},statusCode:{}", url, response.getStatusLine().getStatusCode());
         return null;
     }
 
@@ -141,7 +147,8 @@ public class HttpClientHelper {
         mEntityBuilder.setCharset(Charset.forName(CHAR_SET));
 
         // 二进制参数
-        mEntityBuilder.addBinaryBody(uploadName, file);
+        String fileName = file.getName();
+        mEntityBuilder.addBinaryBody(uploadName, file, PictureContentType.getContentType(fileName.substring(fileName.lastIndexOf(".") + 1)), fileName);
         httpost.setEntity(mEntityBuilder.build());
 
         HttpResponse response = null;
@@ -155,7 +162,54 @@ public class HttpClientHelper {
                 IOUtils.close(response.getEntity().getContent());
             }
         }
-        logger.warn("request is failure,url:{},fileName:{},statusCode:{}", url, file.getName(), response.getStatusLine().getStatusCode());
+        logger.warn("executeFile is failure,url:{},statusCode:{}", url, response.getStatusLine().getStatusCode());
+        return null;
+    }
+
+    public <T> T postFormData(String url, Object dto, Map<String, String> headers, Class<T> clazz) {
+        try {
+            String responseJson = postFormData(url, JSON.toJSONString(dto), headers);
+            return JSON.parseObject(responseJson, clazz);
+        } catch (Exception e) {
+            logger.error("postFormData error ", e);
+        }
+        return null;
+    }
+
+    /**
+     * 发送 http post Form Data 请求
+     */
+    public String postFormData(String url, String jsonStr, Map<String, String> headers) throws IOException {
+        HttpPost httpost = new HttpPost(url);
+        //设置header
+        if (headers != null && headers.size() > 0) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                httpost.addHeader(entry.getKey(), entry.getValue());
+            }
+        }
+
+        RequestConfig config = RequestConfig.custom()
+                .setConnectionRequestTimeout(CONNECTION_REQUEST_TIMEOUT)
+                .setConnectTimeout(CONNECT_TIMEOUT)
+                .setSocketTimeout(SOCKET_TIMEOUT).build();
+        httpost.setConfig(config);
+
+        List<NameValuePair> nvpList = new ArrayList<>();
+        nvpList.add(new BasicNameValuePair("data", jsonStr));
+        httpost.setEntity(new UrlEncodedFormEntity(nvpList, CHAR_SET));
+
+        HttpResponse response = null;
+        try {
+            response = httpClient.execute(httpost);
+            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                return EntityUtils.toString(response.getEntity(), CHAR_SET);
+            }
+        } finally {
+            if (null != response) {
+                IOUtils.close(response.getEntity().getContent());
+            }
+        }
+        logger.warn("postFormData is failure,url:{},statusCode:{}", url, response.getStatusLine().getStatusCode());
         return null;
     }
 

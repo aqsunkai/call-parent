@@ -26,7 +26,7 @@
     <el-button  @click="resetForm('ruleForm')">重置</el-button>
   </el-form-item>
   <el-dialog
-  title="正在慢慢刷新创建的产品"
+  title="正在刷新创建的产品"
   :visible.sync="dialogVisible"
   width="40%" center>
   <p v-if="running" style="color:#409EFF;text-align:center">正在创建</p>

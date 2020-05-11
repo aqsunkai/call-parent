@@ -20,7 +20,7 @@ public class ErpProductReq {
     private String is_fanyi;
     private String category;
     private String[] keywords;
-    private String sketch;
+    private String[] sketch;
     private String des;
     private String kucun;
     private String fromurl;
@@ -32,7 +32,7 @@ public class ErpProductReq {
     private Map<String, String> all_imgs;
     private Map<String, String> image_info;
     private String show_img;
-    private String[] variants = new String[1];
+    private String[] variants = new String[0];
 
     public String getKeywordsId() {
         return keywordsId;
@@ -146,11 +146,11 @@ public class ErpProductReq {
         this.keywords = keywords;
     }
 
-    public String getSketch() {
+    public String[] getSketch() {
         return sketch;
     }
 
-    public void setSketch(String sketch) {
+    public void setSketch(String[] sketch) {
         this.sketch = sketch;
     }
 
