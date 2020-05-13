@@ -107,7 +107,7 @@ export default {
             this.uploadName = []
             this.runningStatusTimer = setInterval(() => {
               this.getProcessRunningStatus()
-            }, 2000)
+            }, 5000)
           }
         } else {
           return false

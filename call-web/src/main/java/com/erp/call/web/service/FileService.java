@@ -1,5 +1,6 @@
 package com.erp.call.web.service;
 
+import com.erp.call.web.dto.PageRes;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
@@ -17,6 +18,10 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 public class FileService {
@@ -25,12 +30,37 @@ public class FileService {
 
     private static final String EXPORT_PATH = "D:/call/files/";
 
+    private ExecutorService executors = Executors.newCachedThreadPool();
+
+    private volatile Map<String, Boolean> runningMap = new ConcurrentHashMap<>();
+
+    private Map<String, String> RUNNING_RESULT = new ConcurrentHashMap<>();
+
     public String splitFile(MultipartFile file, Integer headerRowNum, Integer singleFileNum, String sheetName, String splitSheetName, String fileDate) {
+        String fileName = file.getOriginalFilename();
+        if (Boolean.TRUE.equals(runningMap.get(fileName))) {
+            throw new RuntimeException("fileName文件正在解析，请稍等！");
+        }
+        runningMap.put(fileName, true);
+        RUNNING_RESULT.remove(fileName);
+        executors.execute(() -> {
+            try {
+                asyncSplitFile(file, headerRowNum, singleFileNum, sheetName, splitSheetName, fileDate);
+            } catch (IOException e) {
+                logger.error("异步拆分excel文件关闭流失败", e);
+            }
+        });
+        return fileName;
+    }
+
+    private void asyncSplitFile(MultipartFile file, Integer headerRowNum, Integer singleFileNum, String sheetName, String splitSheetName, String fileDate) throws IOException {
+        Workbook workbook = null;
+        Workbook[] workbooks = null;
+        String fileName = file.getOriginalFilename();
         try {
-            String fileName = file.getOriginalFilename();
             boolean xlsx = fileName.endsWith(".xlsx") || fileName.endsWith(".xlsm");
             String suffix = fileName.substring(fileName.lastIndexOf("."));
-            Workbook workbook = getWorkbook(file, xlsx);
+            workbook = getWorkbook(file, xlsx);
             fileName = fileName.substring(0, fileName.lastIndexOf("."));
             Sheet oldSheet = workbook.getSheet(sheetName);
             if (null == oldSheet) {
@@ -44,7 +74,7 @@ public class FileService {
                 fileNum = (lastRow + 1 - headerRowNum) / singleFileNum + 1;
             }
             Sheet[] sheets = new Sheet[fileNum];
-            Workbook[] workbooks = new Workbook[fileNum];
+            workbooks = new Workbook[fileNum];
             for (int i = 1; i < fileNum + 1; i++) {
                 Workbook newExcelCreat = xlsx ? new XSSFWorkbook() : new HSSFWorkbook();
                 Sheet newSheet = newExcelCreat.createSheet(splitSheetName);
@@ -100,10 +130,19 @@ public class FileService {
                 fileOut.close();
             }
         } catch (Exception e) {
-            logger.error("拆分文件失败", e);
-            throw new RuntimeException(e.getMessage());
+            logger.error("异步拆分excel文件失败", e);
+            RUNNING_RESULT.put(file.getOriginalFilename(), e.getMessage());
+        } finally {
+            runningMap.put(file.getOriginalFilename(), false);
+            if (null != workbook) {
+                workbook.close();
+            }
+            if (null != workbooks && workbooks.length > 0) {
+                for (Workbook book : workbooks) {
+                    book.close();
+                }
+            }
         }
-        return null;
     }
 
     /**
@@ -223,6 +262,13 @@ public class FileService {
             Cell newCell = toRow.createCell(tmpCell.getColumnIndex());
             copyCell(wb, tmpCell, newCell);
         }
+    }
+
+    public PageRes splitFileResult(String fileName) {
+        PageRes res = new PageRes();
+        res.setRunning(runningMap.get(fileName));
+        res.setRunningResult(RUNNING_RESULT.get(fileName));
+        return res;
     }
 
 }

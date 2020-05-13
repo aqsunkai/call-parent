@@ -39,14 +39,16 @@
     <el-button type="primary" @click="submitForm('ruleForm')">拆分文件</el-button>
   </el-form-item>
   <div>
-      <el-alert type = 'success' center show-icon effect="dark" v-show="showRes == 1" :title="result"></el-alert>
-      <el-alert type = 'error' center show-icon effect="dark" v-show="showRes == 2" :title="result"></el-alert>
+      <el-alert type = 'warning' center show-icon effect="dark" v-show="showRes == 1" :title="result"></el-alert>
+      <el-alert type = 'success' center show-icon effect="dark" v-show="showRes == 2" :title="result"></el-alert>
+      <el-alert type = 'error' center show-icon effect="dark" v-show="showRes == 3" :title="result"></el-alert>
   </div>
   </el-form>
 </template>
 <script>
 import { Message } from 'element-ui'
 import * as env from '@/api/base_url'
+import { splitFileResult } from '@/api'
 import { util } from '@/utils/util'
 const baseURL = env.baseURL
 
@@ -76,6 +78,7 @@ export default {
       result: '',
       uploadUrl: '',
       loading: false,
+      splitFileTimer: '',
       ruleForm: {
         headerRowNum: 3,
         fileNum: 200,
@@ -106,6 +109,12 @@ export default {
     this.uploadUrl = baseURL + '/api/file/split'
     this.ruleForm.fileDate = util.dateToStr(new Date(), 1)
   },
+  // 销毁定时器
+  beforeDestroy () {
+    if (this.splitFileTimer) {
+      clearInterval(this.splitFileTimer)
+    }
+  },
   methods: {
     submitForm (formName) {
       this.result = ''
@@ -121,17 +130,14 @@ export default {
     },
     handleSuccessUpload (res) {
       if (res.status) {
-        this.result = '拆分成功！'
+        this.result = '请等待拆分结果！'
         this.showRes = 1
-        Message({
-          message: this.result,
-          type: 'success',
-          duration: 3 * 1000,
-          showClose: true
-        })
+        this.splitFileTimer = setInterval(() => {
+          this.getSplitFileResult(res.result)
+        }, 5000)
       } else {
         this.result = res.message
-        this.showRes = 2
+        this.showRes = 3
         Message({
           message: this.result,
           type: 'error',
@@ -140,6 +146,21 @@ export default {
         })
       }
       this.loading = false
+    },
+    async getSplitFileResult (fileName) {
+      const res = await splitFileResult({'fileName': fileName})
+      if (res.result) {
+        if (!res.result.running) {
+          if (!res.result.runningResult) {
+            this.result = '拆分成功'
+            this.showRes = 2
+          } else {
+            this.result = res.result.runningResult
+            this.showRes = 3
+          }
+          clearInterval(this.splitFileTimer)
+        }
+      }
     }
   }
 }

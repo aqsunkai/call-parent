@@ -21,3 +21,10 @@ export function productResult (data) {
     data: data
   })
 }
+export function splitFileResult (params) {
+  return Axios({
+    url: `/api/file/splitResult`,
+    method: 'get',
+    params: params
+  })
+}
