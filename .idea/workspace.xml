@@ -1,29 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e5a3e179-ae63-4343-828b-9a02060be9bb" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-client/src/api/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/call-client/src/api/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-client/src/views/erp_product_send.vue" beforeDir="false" afterPath="$PROJECT_DIR$/call-client/src/views/erp_product_send.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-client/src/views/product_send.vue" beforeDir="false" afterPath="$PROJECT_DIR$/call-client/src/views/product_send.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-client/src/views/split_file.vue" beforeDir="false" afterPath="$PROJECT_DIR$/call-client/src/views/split_file.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/controller/FileController.java" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/controller/FileController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/Description.java" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/Description.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/ErpInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/ErpInfo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/ErpProductReq.java" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/ErpProductReq.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/ErpProductRes.java" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/ErpProductRes.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/ErpUploadRes.java" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/ErpUploadRes.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/Extend.java" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/Extend.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/Image.java" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/Image.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/Info.java" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/Info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/PageReq.java" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/PageReq.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/PageRes.java" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/PageRes.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/ProductDeclare.java" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/ProductDeclare.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/ProductReq.java" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/ProductReq.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/ProductRes.java" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/ProductRes.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/UploadRes.java" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/dto/UploadRes.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/service/FileService.java" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/service/FileService.java" afterDir="false" />
-    </list>
+    <list default="true" id="e5a3e179-ae63-4343-828b-9a02060be9bb" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -201,7 +179,7 @@
       <workItem from="1589281625165" duration="9417000" />
       <workItem from="1589336846054" duration="634000" />
       <workItem from="1589369688189" duration="598000" />
-      <workItem from="1589370305142" duration="3953000" />
+      <workItem from="1589370305142" duration="4198000" />
     </task>
     <task id="LOCAL-00001" summary="提交">
       <created>1588763245473</created>
@@ -245,7 +223,14 @@
       <option name="project" value="LOCAL" />
       <updated>1589369928814</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="拆分文件">
+      <created>1589374393611</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1589374393611</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -266,10 +251,10 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="提交" />
-    <MESSAGE value="拆分文件" />
     <MESSAGE value="小米erp" />
     <MESSAGE value="修改" />
-    <option name="LAST_COMMIT_MESSAGE" value="修改" />
+    <MESSAGE value="拆分文件" />
+    <option name="LAST_COMMIT_MESSAGE" value="拆分文件" />
   </component>
   <component name="WindowStateProjectService">
     <state x="552" y="-901" key="#Notifications" timestamp="1589370316462">
@@ -290,20 +275,20 @@
     </state>
     <state x="665" y="-1040" key="#com.intellij.ide.util.MemberChooser/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1589199684388" />
     <state x="443" y="26" key="#com.intellij.ide.util.MemberChooser/0.0.1280.680@0.0.1280.680" timestamp="1589118985536" />
-    <state x="523" y="-966" key="CommitChangelistDialog2" timestamp="1589369813853">
+    <state x="523" y="-966" key="CommitChangelistDialog2" timestamp="1589374392917">
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
-    <state x="523" y="-966" key="CommitChangelistDialog2/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1589369813853" />
+    <state x="523" y="-966" key="CommitChangelistDialog2/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1589374392917" />
     <state x="349" y="0" key="CommitChangelistDialog2/0.0.1280.680@0.0.1280.680" timestamp="1589124196493" />
     <state width="1340" height="466" key="DebuggerActiveHint" timestamp="1589290566606">
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
     <state width="1340" height="466" key="DebuggerActiveHint/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1589290566606" />
     <state width="909" height="305" key="DebuggerActiveHint/0.0.1280.680@0.0.1280.680" timestamp="1589197167256" />
-    <state x="242" y="51" key="DiffContextDialog" timestamp="1589124130549">
-      <screen x="0" y="0" width="1280" height="680" />
+    <state x="440" y="-850" key="DiffContextDialog" timestamp="1589374379351">
+      <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
-    <state x="440" y="-850" key="DiffContextDialog/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1588763232158" />
+    <state x="440" y="-850" key="DiffContextDialog/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1589374379351" />
     <state x="242" y="51" key="DiffContextDialog/0.0.1280.680@0.0.1280.680" timestamp="1589124130549" />
     <state width="1877" height="321" key="GridCell.Tab.0.bottom" timestamp="1589374342734">
       <screen x="0" y="-1080" width="1920" height="1040" />
@@ -385,15 +370,15 @@
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
     <state x="491" y="-916" key="SettingsEditor/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1589370287156" />
-    <state width="747" height="681" key="SwitcherDM" timestamp="1589372857447">
+    <state width="747" height="681" key="SwitcherDM" timestamp="1589374639152">
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
-    <state width="747" height="681" key="SwitcherDM/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1589372857447" />
+    <state width="747" height="681" key="SwitcherDM/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1589374639152" />
     <state width="498" height="445" key="SwitcherDM/0.0.1280.680@0.0.1280.680" timestamp="1588587569650" />
-    <state x="552" y="-826" key="Vcs.Push.Dialog.v2" timestamp="1589369931189">
+    <state x="552" y="-826" key="Vcs.Push.Dialog.v2" timestamp="1589374395082">
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
-    <state x="552" y="-826" key="Vcs.Push.Dialog.v2/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1589369931189" />
+    <state x="552" y="-826" key="Vcs.Push.Dialog.v2/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1589374395082" />
     <state x="368" y="149" key="Vcs.Push.Dialog.v2/0.0.1280.680@0.0.1280.680" timestamp="1589124198527" />
     <state x="629" y="-684" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1589281628513">
       <screen x="0" y="-1080" width="1920" height="1040" />
