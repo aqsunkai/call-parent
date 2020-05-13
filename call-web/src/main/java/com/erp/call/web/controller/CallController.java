@@ -2,7 +2,6 @@ package com.erp.call.web.controller;
 
 import com.erp.call.web.dto.PageReq;
 import com.erp.call.web.dto.PageRes;
-import com.erp.call.web.dto.UploadRes;
 import com.erp.call.web.service.CallService;
 import com.erp.call.web.util.Result;
 import org.apache.commons.lang3.StringUtils;
@@ -18,17 +17,6 @@ public class CallController {
 
     @Autowired
     private CallService callService;
-
-    @PostMapping(value = "/image/send")
-    public Result<UploadRes> sendImage(@RequestBody PageReq pageReq) {
-        if (StringUtils.isEmpty(pageReq.getCookie())) {
-            return Result.error("填写cookie");
-        }
-        if (StringUtils.isEmpty(pageReq.getFilePath())) {
-            return Result.error("填写filePath");
-        }
-        return Result.success(callService.sendImage(pageReq));
-    }
 
     @PostMapping(value = "/product/send")
     public Result<String> sendProduct(@RequestBody PageReq pageReq) {

@@ -1,0 +1,39 @@
+package com.erp.call.web.util;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+
+public class FileUtil {
+
+    private static Logger logger = LoggerFactory.getLogger(FileUtil.class);
+
+    public static String txt2String(String fileName, File file) {
+        StringBuilder result = new StringBuilder();
+        BufferedReader br = null;
+        try {
+            //构造一个BufferedReader类来读取文件
+            br = new BufferedReader(new FileReader(file));
+            String s;
+            //使用readLine方法，一次读一行
+            while ((s = br.readLine()) != null) {
+                result.append(s);
+            }
+            br.close();
+        } catch (Exception e) {
+            logger.error("读取" + fileName + "下的" + file.getName() + "文件失败", e);
+        } finally {
+            if (null != br) {
+                try {
+                    br.close();
+                } catch (Exception e) {
+                    logger.error("关闭" + fileName + "下的" + file.getName() + "文件流失败", e);
+                }
+            }
+        }
+        return result.toString();
+    }
+}

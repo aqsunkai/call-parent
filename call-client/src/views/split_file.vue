@@ -16,6 +16,9 @@
     </el-option>
   </el-select>
   </el-form-item>
+  <el-form-item label="拆分后sheet名称" prop="splitSheetName">
+    <el-input v-model="ruleForm.splitSheetName"></el-input>
+  </el-form-item>
   <el-form-item label="拆分开始日期" prop="fileDate">
     <el-input v-model="ruleForm.fileDate"></el-input>
   </el-form-item>
@@ -51,6 +54,9 @@ export default {
   data () {
     return {
       options: [{
+        value: 'Sheet0',
+        label: '默认-Sheet0'
+      }, {
         value: 'Template',
         label: '英国-Template'
       }, {
@@ -73,7 +79,8 @@ export default {
       ruleForm: {
         headerRowNum: 3,
         fileNum: 200,
-        sheetName: '',
+        sheetName: 'Sheet0',
+        splitSheetName: 'Sheet0',
         fileDate: ''
       },
       rules: {
@@ -84,7 +91,10 @@ export default {
           { required: true, message: '请输入单个excel条数', trigger: 'blur' }
         ],
         sheetName: [
-          { required: true, message: 'sheet名称', trigger: 'blur' }
+          { required: true, message: '请选择sheet名称', trigger: 'blur' }
+        ],
+        splitSheetName: [
+          { required: true, message: '请输入拆分后sheet名称', trigger: 'blur' }
         ],
         fileDate: [
           { required: true, message: '请输入拆分开始日期', trigger: 'blur' }

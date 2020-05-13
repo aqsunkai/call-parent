@@ -20,11 +20,12 @@ import java.util.Iterator;
 
 @Service
 public class FileService {
-    private Logger logger = LoggerFactory.getLogger(FileService.class);
 
-    private final static String EXPORT_PATH = "D:/call/files/";
+    private static final Logger logger = LoggerFactory.getLogger(FileService.class);
 
-    public String splitFile(MultipartFile file, Integer headerRowNum, Integer singleFileNum, String sheetName, String fileDate) {
+    private static final String EXPORT_PATH = "D:/call/files/";
+
+    public String splitFile(MultipartFile file, Integer headerRowNum, Integer singleFileNum, String sheetName, String splitSheetName, String fileDate) {
         try {
             String fileName = file.getOriginalFilename();
             boolean xlsx = fileName.endsWith(".xlsx") || fileName.endsWith(".xlsm");
@@ -46,7 +47,7 @@ public class FileService {
             Workbook[] workbooks = new Workbook[fileNum];
             for (int i = 1; i < fileNum + 1; i++) {
                 Workbook newExcelCreat = xlsx ? new XSSFWorkbook() : new HSSFWorkbook();
-                Sheet newSheet = newExcelCreat.createSheet();
+                Sheet newSheet = newExcelCreat.createSheet(splitSheetName);
                 copySheet(oldSheet, newSheet);
                 sheets[i - 1] = newSheet;
                 workbooks[i - 1] = newExcelCreat;

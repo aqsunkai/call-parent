@@ -23,7 +23,8 @@ public class FileController {
                                     @RequestParam("headerRowNum") Integer headerRowNum,
                                     @RequestParam("fileNum") Integer fileNum,
                                     @RequestParam("sheetName") String sheetName,
+                                    @RequestParam("splitSheetName") String splitSheetName,
                                     @RequestParam("fileDate") String fileDate) {
-        return Result.success(fileService.splitFile(file, headerRowNum, fileNum, sheetName, fileDate));
+        return Result.success(fileService.splitFile(file, headerRowNum, fileNum, sheetName, splitSheetName, fileDate));
     }
 }
