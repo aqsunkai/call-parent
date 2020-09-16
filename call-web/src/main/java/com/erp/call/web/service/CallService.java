@@ -90,6 +90,7 @@ public class CallService {
                             logger.warn("文件夹名称：{}，{}目录下没有图片，正常上传", fileName, pageReq.getProperty());
                             continue;
                         }
+                        logger.info("文件夹名称：{}，{}目录下图片开始上传", fileName, pageReq.getProperty());
                         for (File masterFile : masterFiles) {
                             // 上传属性图图片
                             UploadRes res = httpClientHelper.postFile(UPLOAD_URL, masterFile, "file", getRequestHeader(pageReq.getCookie()), UploadRes.class);
@@ -108,6 +109,7 @@ public class CallService {
                             logger.warn("文件夹名称：{}，{}目录下没有图片，正常上传", fileName, pageReq.getAttachProperty());
                             continue;
                         }
+                        logger.info("文件夹名称：{}，{}目录下图片开始上传", fileName, pageReq.getAttachProperty());
                         for (File slaveFile : slaveFiles) {
                             // 上传主图图片
                             UploadRes res = httpClientHelper.postFile(UPLOAD_URL, slaveFile, "file", getRequestHeader(pageReq.getCookie()), UploadRes.class);
@@ -201,7 +203,6 @@ public class CallService {
                 Map<String, String> masterName = Maps.newHashMap();
                 boolean upload = true;
                 File[] slaveFiles = null;
-                pro:
                 for (File imageFile : imageFiles) {
                     if (pageReq.getProperty().equals(imageFile.getName())) {
                         File[] masterFiles = imageFile.listFiles();
@@ -210,6 +211,7 @@ public class CallService {
                             upload = false;
                             break;
                         }
+                        logger.info("文件夹名称：{}，{}目录下图片开始上传", fileName, pageReq.getProperty());
                         for (File masterFile : masterFiles) {
                             // 上传属性图图片
                             ErpUploadRes res = httpClientHelper.postFile(ERP_UPLOAD_URL, masterFile, "imgs", getErpRequestHeader(pageReq.getCookie(), true), ErpUploadRes.class);
@@ -217,16 +219,18 @@ public class CallService {
                                 masterName.put(res.getData().getId(), masterFile.getName().substring(0, masterFile.getName().lastIndexOf(".")));
                                 masterUrl.put(res.getData().getId(), res.getData().getUrl());
                                 masterSize.put(res.getData().getId(), res.getData().getSize().toString());
+                                logger.info("文件夹名称：{}，{}目录，上传{}图片成功", fileName, pageReq.getProperty(), masterFile.getName());
+                                sleepMoment();
                             } else {
                                 String errMsg = "";
                                 if (null != res) {
                                     errMsg = res.getMsg();
                                 }
-                                logger.warn("文件夹名称：{}，{}目录，上传{}图片失败，失败原因：{}，该文件夹下所有产品都不会创建", fileName, pageReq.getProperty(), masterFile.getName(), errMsg);
-                                upload = false;
-                                break pro;
+                                logger.warn("文件夹名称：{}，{}目录，上传{}图片失败，失败原因：{}", fileName, pageReq.getProperty(), masterFile.getName(), errMsg);
+                                sleepMomentFail();
+                                //upload = false;
+//                                break pro;
                             }
-                            sleepMoment();
                         }
                     } else if (pageReq.getAttachProperty().equals(imageFile.getName())) {
                         slaveFiles = imageFile.listFiles();
@@ -251,7 +255,7 @@ public class CallService {
                         }
                     }
                 }
-                if (!upload) {
+                if (!upload || masterName.size() == 0) {
                     uploadFail(pageReq, fileName);
                     continue;
                 }
@@ -262,12 +266,14 @@ public class CallService {
                     Map<String, String> slaveUrl = Maps.newHashMap();
                     if (null != slaveFiles && slaveFiles.length > 0) {
                         // 上传主图图片
+                        logger.info("文件夹名称：{}，{}目录下图片开始上传{}产品所需图片", fileName, pageReq.getAttachProperty(), master.getValue());
                         for (File slaveFile : slaveFiles) {
-                            // 上传属性图图片
+                            // 上传主图图片
                             ErpUploadRes res = httpClientHelper.postFile(ERP_UPLOAD_URL, slaveFile, "imgs", getErpRequestHeader(pageReq.getCookie(), true), ErpUploadRes.class);
                             if (null != res && Boolean.TRUE.equals(res.getState())) {
                                 slaveUrl.put(res.getData().getId(), res.getData().getUrl());
                                 slaveSize.put(res.getData().getId(), res.getData().getSize().toString());
+                                logger.info("文件夹名称：{}，{}目录，上传{}图片成功，{}产品", fileName, pageReq.getAttachProperty(), slaveFile.getName(), master.getValue());
                             } else {
                                 String errMsg = "";
                                 if (null != res) {
@@ -293,10 +299,12 @@ public class CallService {
                         if (null != res) {
                             errMsg = res.getMsg();
                         }
-                        logger.warn("文件夹名称：{}，{}目录下{}产品上传失败，失败原因：{}，自动上传下一个", fileName, pageReq.getProperty(), master.getValue(), errMsg);
+                        logger.warn("文件夹名称：{}，{}目录下{}产品上传失败，失败原因：{}", fileName, pageReq.getProperty(), master.getValue(), errMsg);
                         failCount++;
+                    } else {
+                        logger.info("文件夹名称：{}，{}目录下{}产品上传成功", fileName, pageReq.getProperty(), master.getValue());
                     }
-                    sleepMoment();
+                    sleepMomentForProduct();
                 }
                 if (failCount == 0) {
                     logger.info("文件夹名称：{}，所有产品都上传成功", fileName);
@@ -305,6 +313,7 @@ public class CallService {
                     logger.warn("文件夹名称：{}，有{}个产品上传失败", fileName, failCount);
                     uploadFail(pageReq, fileName);
                 }
+                sleepMomentFail();
             }
         } catch (Exception e) {
             logger.error("异步创建产品失败", e);
@@ -314,7 +323,15 @@ public class CallService {
     }
 
     private void sleepMoment() throws InterruptedException {
+        TimeUnit.SECONDS.sleep(5);
+    }
+
+    private void sleepMomentForProduct() throws InterruptedException {
         TimeUnit.SECONDS.sleep(1);
+    }
+
+    private void sleepMomentFail() throws InterruptedException {
+        TimeUnit.SECONDS.sleep(30);
     }
 
     /**

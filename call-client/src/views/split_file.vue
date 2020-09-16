@@ -7,7 +7,7 @@
     <el-input v-model="ruleForm.fileNum"></el-input>
   </el-form-item>
   <el-form-item label="sheet名称" prop="sheetName">
-    <el-select v-model="ruleForm.sheetName" placeholder="请选择">
+    <el-select v-model="ruleForm.sheetName" placeholder="请选择" @change="sheetNameChange">
     <el-option
       v-for="item in options"
       :key="item.value"
@@ -116,6 +116,9 @@ export default {
     }
   },
   methods: {
+    sheetNameChange (val) {
+      this.ruleForm.splitSheetName = val
+    },
     submitForm (formName) {
       this.result = ''
       this.showRes = 0

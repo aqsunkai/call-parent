@@ -43,17 +43,17 @@ public class HttpClientHelper {
 
     private static Logger logger = LoggerFactory.getLogger(HttpClientHelper.class);
 
-    private static final int CONNECTION_REQUEST_TIMEOUT = 5000;
-    private static final int CONNECT_TIMEOUT = 20000;
-    private static final int SOCKET_TIMEOUT = 20000;
+    private static final int CONNECTION_REQUEST_TIMEOUT = 10000;
+    private static final int CONNECT_TIMEOUT = 30000;
+    private static final int SOCKET_TIMEOUT = 60000;
     private static final String CHAR_SET = "utf-8";
     private CloseableHttpClient httpClient;
 
     @PostConstruct
     private void init() {
         PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
-        cm.setMaxTotal(200);
-        cm.setDefaultMaxPerRoute(20);
+        cm.setMaxTotal(1000);
+        cm.setDefaultMaxPerRoute(100);
         this.httpClient = HttpClients.custom()
                 .setConnectionManager(cm)
                 .build();
