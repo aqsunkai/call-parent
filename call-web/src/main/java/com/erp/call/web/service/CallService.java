@@ -236,18 +236,7 @@ public class CallService {
                         slaveFiles = imageFile.listFiles();
                     } else if (pageReq.getType() == 1 && imageFile.getName().startsWith(pageReq.getProductNameFile())) {
                         // 产品名称文件夹名称
-                        String txt = FileUtil.txt2String(fileName, imageFile);
-                        if (StringUtils.isNotEmpty(txt)) {
-                            if (txt.contains("@")) {
-                                price = txt.split("@")[0];
-                                productName = txt.split("@")[1];
-                                productName = productName.split("- AliExpress")[0];
-                                productName = productName.substring(0, productName.length() - 5);
-                            } else {
-                                productName = txt.split("- AliExpress")[0];
-                                productName = productName.substring(0, productName.length() - 5);
-                            }
-                        }
+                        productName = FileUtil.readFirstLine(fileName, imageFile);
                         if (StringUtils.isEmpty(productName)) {
                             logger.warn("文件夹名称：{}，读取{}文件，产品名称不存在，该文件夹下所有产品都不会创建", fileName, pageReq.getProductNameFile());
                             upload = false;

@@ -33,7 +33,7 @@ public class CallController {
             return Result.error("填写主图所在文件夹名称");
         }
         if (pageReq.getType() == 1 && StringUtils.isEmpty(pageReq.getProductNameFile())) {
-            return Result.error("填写产品&价格文件夹名");
+            return Result.error("填写产品&价格文件名");
         }
         pageReq.setCookie(pageReq.getCookie().trim());
         callService.sendProduct(pageReq);
@@ -55,7 +55,7 @@ public class CallController {
             return Result.error("填写主图所在文件夹名称");
         }
         if (pageReq.getType() == 1 && StringUtils.isEmpty(pageReq.getProductNameFile())) {
-            return Result.error("填写产品&价格文件夹名");
+            return Result.error("填写产品文件名");
         }
         pageReq.setCookie(pageReq.getCookie().trim());
         callService.sendErpProduct(pageReq);

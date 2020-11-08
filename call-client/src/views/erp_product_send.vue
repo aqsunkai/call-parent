@@ -15,7 +15,7 @@
   <el-form-item label="主图名称" prop="attachProperty">
     <el-input v-model="ruleForm.attachProperty"></el-input>
   </el-form-item>
-  <el-form-item label="产品&价格文件名" prop="productNameFile">
+  <el-form-item label="产品文件名" prop="productNameFile">
     <el-input v-model="ruleForm.productNameFile"></el-input>
   </el-form-item>
   <el-form-item label="cookie" prop="cookie">
@@ -61,7 +61,7 @@ export default {
         filePath: '',
         property: '属性图',
         attachProperty: '主图',
-        productNameFile: '',
+        productNameFile: '下图记录',
         cookie: ''
       },
       rules: {

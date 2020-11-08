@@ -61,7 +61,7 @@ export default {
         filePath: '',
         property: '属性图',
         attachProperty: '主图',
-        productNameFile: '',
+        productNameFile: '下图记录',
         cookie: ''
       },
       rules: {

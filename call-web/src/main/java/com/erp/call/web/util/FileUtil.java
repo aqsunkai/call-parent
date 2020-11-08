@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 
 public class FileUtil {
 
@@ -35,5 +36,33 @@ public class FileUtil {
             }
         }
         return result.toString();
+    }
+
+    public static String readFirstLine(String fileName, File file) {
+        StringBuilder result = new StringBuilder();
+        BufferedReader br = null;
+        try {
+            //构造一个BufferedReader类来读取文件
+            br = new BufferedReader(new FileReader(file));
+            result.append(br.readLine());
+            br.close();
+        } catch (Exception e) {
+            logger.error("读取" + fileName + "下的" + file.getName() + "文件失败", e);
+        } finally {
+            if (null != br) {
+                try {
+                    br.close();
+                } catch (Exception e) {
+                    logger.error("关闭" + fileName + "下的" + file.getName() + "文件流失败", e);
+                }
+            }
+        }
+        return result.toString();
+    }
+
+    public static void main(String[] args) throws IOException {
+        File file = new File("D:\\call\\aaaaaaaaaa\\1 (114)\\下图记录.txt");
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        System.out.println(br.readLine());
     }
 }
