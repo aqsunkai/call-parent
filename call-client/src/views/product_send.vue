@@ -1,7 +1,7 @@
 <template>
 <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="130px" class="product-ruleForm" size="small" >
   <el-form-item label="产品名称" prop="type">
-    <el-radio-group v-model="ruleForm.type" class="content_radio">
+    <el-radio-group v-model="ruleForm.type">
       <el-radio :label="0">使用图片名称</el-radio>
       <el-radio :label="1">读取txt文件</el-radio>
     </el-radio-group>

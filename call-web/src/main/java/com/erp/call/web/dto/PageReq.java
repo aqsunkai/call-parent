@@ -7,6 +7,8 @@ public class PageReq {
 
     private Integer type;
 
+    private Integer attachType;
+
     private String filePath;
 
     private String cookie;

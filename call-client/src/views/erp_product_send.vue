@@ -1,9 +1,15 @@
 <template>
 <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="130px" class="xiaomi-ruleForm" size="small" >
   <el-form-item label="产品名称" prop="type">
-    <el-radio-group v-model="ruleForm.type" class="content_radio">
+    <el-radio-group v-model="ruleForm.type">
       <el-radio :label="0">使用图片名称</el-radio>
       <el-radio :label="1">读取txt文件</el-radio>
+    </el-radio-group>
+  </el-form-item>
+  <el-form-item label="主图的产品方式" prop="attachType">
+    <el-radio-group v-model="ruleForm.attachType">
+      <el-radio :label="0">主图和属性图平级</el-radio>
+      <el-radio :label="1">主图是属性图的子图</el-radio>
     </el-radio-group>
   </el-form-item>
   <el-form-item label="文件根路径" prop="filePath">
@@ -58,6 +64,7 @@ export default {
       uploadName: [],
       ruleForm: {
         type: 1,
+        attachType: 1,
         filePath: '',
         property: '属性图',
         attachProperty: '主图',

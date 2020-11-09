@@ -8,7 +8,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/productSend',
+      redirect: '/xiaomiErp',
       name: 'Container',
       component: Container,
       children: [
