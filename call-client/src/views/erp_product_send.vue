@@ -1,27 +1,32 @@
 <template>
-<el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="130px" class="xiaomi-ruleForm" size="small" >
+<el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="150px" class="xiaomi-ruleForm" size="small" >
+  <el-form-item label="文件根路径" prop="filePath">
+    <el-input v-model="ruleForm.filePath"></el-input>
+  </el-form-item>
+  <el-form-item label="列表文件夹名称" prop="property">
+    <el-input v-model="ruleForm.property"></el-input>
+  </el-form-item>
+  <el-form-item label="详情文件夹名称" prop="attachProperty">
+    <el-input v-model="ruleForm.attachProperty"></el-input>
+  </el-form-item>
+  <el-form-item label="文件夹关系" prop="attachType">
+    <el-radio-group v-model="ruleForm.attachType">
+      <el-radio :label="0">列表文件夹和详情文件夹平级，即两个文件夹都作为主图</el-radio>
+      <br>
+      <el-radio :label="1" style="margin-top: 8px">列表文件夹作为主图，详情文件夹作为附图</el-radio>
+      <br>
+      <el-radio :label="2" style="margin-top: 8px">列表文件夹和详情文件夹第一张作为主图，详情文件夹剩下的图片作为附图</el-radio>
+      <br>
+      <el-radio :label="3" style="margin-top: 8px">列表文件夹和详情文件夹第一张作为主图，详情文件夹剩下的图片丢弃</el-radio>
+    </el-radio-group>
+  </el-form-item>
   <el-form-item label="产品名称" prop="type">
     <el-radio-group v-model="ruleForm.type">
       <el-radio :label="0">使用图片名称</el-radio>
       <el-radio :label="1">读取txt文件</el-radio>
     </el-radio-group>
   </el-form-item>
-  <el-form-item label="主图的产品方式" prop="attachType">
-    <el-radio-group v-model="ruleForm.attachType">
-      <el-radio :label="0">主图和属性图平级</el-radio>
-      <el-radio :label="1">主图是属性图的子图</el-radio>
-    </el-radio-group>
-  </el-form-item>
-  <el-form-item label="文件根路径" prop="filePath">
-    <el-input v-model="ruleForm.filePath"></el-input>
-  </el-form-item>
-  <el-form-item label="属性图名称" prop="property">
-    <el-input v-model="ruleForm.property"></el-input>
-  </el-form-item>
-  <el-form-item label="主图名称" prop="attachProperty">
-    <el-input v-model="ruleForm.attachProperty"></el-input>
-  </el-form-item>
-  <el-form-item label="产品文件名" prop="productNameFile">
+  <el-form-item label="txt文件名" prop="productNameFile" v-if="ruleForm.type==1">
     <el-input v-model="ruleForm.productNameFile"></el-input>
   </el-form-item>
   <el-form-item label="cookie" prop="cookie">
@@ -64,7 +69,7 @@ export default {
       uploadName: [],
       ruleForm: {
         type: 1,
-        attachType: 1,
+        attachType: '',
         filePath: '',
         property: '属性图',
         attachProperty: '主图',
@@ -76,10 +81,13 @@ export default {
           { required: true, message: '请输入文件根路径', trigger: 'blur' }
         ],
         property: [
-          { required: true, message: '请输入', trigger: 'blur' }
+          { required: true, message: '请输入列表文件夹名称', trigger: 'blur' }
         ],
         attachProperty: [
-          { required: true, message: '请输入', trigger: 'blur' }
+          { required: true, message: '请输入详情列表文件夹名称', trigger: 'blur' }
+        ],
+        attachType: [
+          { required: true, message: '请选择文件夹关系', trigger: 'blur' }
         ],
         cookie: [
           { required: true, message: '请输入cookie', trigger: 'blur' }

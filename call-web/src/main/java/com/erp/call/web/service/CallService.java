@@ -16,6 +16,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -200,21 +201,23 @@ public class CallService {
                 String price = "0";
                 Map<String, String> masterSize = Maps.newHashMap();
                 Map<String, String> masterUrl = Maps.newHashMap();
-                Map<String, String> masterName = Maps.newHashMap();
+                Map<String, String> masterName = Maps.newLinkedHashMap();
                 boolean upload = true;
-                File[] slaveFiles = null;
+                List<File> slaveFiles = Lists.newArrayList();
                 List<String> slaveFileIds = Lists.newArrayList();
                 for (File imageFile : imageFiles) {
                     if (pageReq.getProperty().equals(imageFile.getName())) {
                         File[] masterFiles = imageFile.listFiles();
                         if (null == masterFiles || masterFiles.length == 0) {
-                            if (pageReq.getAttachType() == 0) {
+                            if (pageReq.getAttachType() == 1) {
+                                logger.warn("文件夹名称：{}，{}目录下没有图片，该文件夹下所有产品都不会创建", fileName, pageReq.getProperty());
+                                upload = false;
+                                break;
+                            } else {
+                                // 等于0、2、3时忽略列表文件夹
                                 logger.warn("文件夹名称：{}，{}目录下没有图片", fileName, pageReq.getProperty());
                                 continue;
                             }
-                            logger.warn("文件夹名称：{}，{}目录下没有图片，该文件夹下所有产品都不会创建", fileName, pageReq.getProperty());
-                            upload = false;
-                            break;
                         }
                         logger.info("文件夹名称：{}，{}目录下图片开始上传", fileName, pageReq.getProperty());
                         for (File masterFile : masterFiles) {
@@ -236,12 +239,31 @@ public class CallService {
                             }
                         }
                     } else if (pageReq.getAttachProperty().equals(imageFile.getName())) {
-                        if (pageReq.getAttachType() == 1) {
-                            slaveFiles = imageFile.listFiles();
+                        List<File> masterFiles = Lists.newArrayList();
+                        File[] listFiles = imageFile.listFiles();
+                        if (pageReq.getAttachType() == 0) {
+                            // 列表文件夹和详情文件夹平级，即两个文件夹都作为主图
+                            masterFiles.addAll(Arrays.asList(listFiles));
+                        } else if (pageReq.getAttachType() == 1) {
+                            // 列表文件夹作为主图，详情文件夹作为附图
+                            slaveFiles.addAll(Arrays.asList(listFiles));
                             continue;
+                        } else if (pageReq.getAttachType() == 2) {
+                            // 列表文件夹和详情文件夹第一张作为主图，详情文件夹剩下的图片作为附图
+                            boolean flag = true;
+                            for (File listFile : listFiles) {
+                                if (flag) {
+                                    masterFiles.add(listFile);
+                                } else {
+                                    slaveFiles.add(listFile);
+                                }
+                                flag = false;
+                            }
+                        } else if (pageReq.getAttachType() == 3) {
+                            // 列表文件夹和详情文件夹第一张作为主图，详情文件夹剩下的图片丢弃
+                            masterFiles.add(listFiles[0]);
                         }
-                        File[] masterFiles = imageFile.listFiles();
-                        if (null == masterFiles || masterFiles.length == 0) {
+                        if (masterFiles.size() == 0) {
                             logger.warn("文件夹名称：{}，{}目录下没有图片", fileName, pageReq.getAttachProperty());
                             continue;
                         }
@@ -284,7 +306,7 @@ public class CallService {
                     boolean uploadSlave = true;
                     Map<String, String> slaveSize = Maps.newHashMap();
                     Map<String, String> slaveUrl = Maps.newHashMap();
-                    if (null != slaveFiles && slaveFiles.length > 0) {
+                    if (slaveFiles.size() > 0) {
                         // 上传主图图片
                         logger.info("文件夹名称：{}，{}目录下图片开始上传{}产品所需图片", fileName, pageReq.getAttachProperty(), master.getValue());
                         for (File slaveFile : slaveFiles) {
