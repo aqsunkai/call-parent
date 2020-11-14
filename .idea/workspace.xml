@@ -2,9 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e5a3e179-ae63-4343-828b-9a02060be9bb" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/js/3.a63caac2ffc89330d7d2.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/js/3.a63caac2ffc89330d7d2.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/js/manifest.586881ec277590deaa0d.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/js/manifest.586881ec277590deaa0d.js.map" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-client/src/views/erp_product_send.vue" beforeDir="false" afterPath="$PROJECT_DIR$/call-client/src/views/erp_product_send.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/service/CallService.java" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/service/CallService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/js/3.586d5d07d120f5595806.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/js/3.586d5d07d120f5595806.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/js/manifest.75f817ffaed51749f9ae.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/js/manifest.75f817ffaed51749f9ae.js.map" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -232,7 +239,7 @@
       <workItem from="1604832497564" duration="4260000" />
       <workItem from="1604917233660" duration="5078000" />
       <workItem from="1605148849508" duration="295000" />
-      <workItem from="1605330431215" duration="5252000" />
+      <workItem from="1605330431215" duration="5574000" />
     </task>
     <task id="LOCAL-00001" summary="提交">
       <created>1588763245473</created>
@@ -325,7 +332,14 @@
       <option name="project" value="LOCAL" />
       <updated>1604921456899</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="增加详情文件夹第一张图片作为主图逻辑">
+      <created>1605338432034</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1605338432034</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -357,23 +371,24 @@
     <MESSAGE value="test" />
     <MESSAGE value="增加主图的产品方式：&#10;0：主图和属性图平级&#10;1：主图是属性图的子图" />
     <MESSAGE value="npm run build" />
-    <option name="LAST_COMMIT_MESSAGE" value="npm run build" />
+    <MESSAGE value="增加详情文件夹第一张图片作为主图逻辑" />
+    <option name="LAST_COMMIT_MESSAGE" value="增加详情文件夹第一张图片作为主图逻辑" />
   </component>
   <component name="WindowStateProjectService">
     <state x="414" y="-904" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1600250965046">
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
     <state x="414" y="-904" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1600250965046" />
-    <state x="518" y="-966" key="CommitChangelistDialog2" timestamp="1604921456337">
-      <screen x="0" y="-1080" width="1920" height="1040" />
+    <state x="345" y="0" key="CommitChangelistDialog2" timestamp="1605338431580">
+      <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state x="518" y="-966" key="CommitChangelistDialog2/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1604921456337" />
-    <state x="345" y="0" key="CommitChangelistDialog2/0.0.1280.680@0.0.1280.680" timestamp="1604832623295" />
-    <state x="363" y="-1002" key="DiffContextDialog" timestamp="1604921164294">
-      <screen x="0" y="-1080" width="1920" height="1040" />
+    <state x="345" y="0" key="CommitChangelistDialog2/0.0.1280.680@0.0.1280.680" timestamp="1605338431580" />
+    <state x="242" y="51" key="DiffContextDialog" timestamp="1605338402072">
+      <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state x="363" y="-1002" key="DiffContextDialog/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1604921164294" />
-    <state x="242" y="51" key="DiffContextDialog/0.0.1280.680@0.0.1280.680" timestamp="1604832613951" />
+    <state x="242" y="51" key="DiffContextDialog/0.0.1280.680@0.0.1280.680" timestamp="1605338402072" />
     <state width="1239" height="307" key="GridCell.Tab.0.bottom" timestamp="1605338267838">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
@@ -439,11 +454,11 @@
     </state>
     <state width="747" height="698" key="SwitcherDM/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1605148851710" />
     <state width="498" height="456" key="SwitcherDM/0.0.1280.680@0.0.1280.680" timestamp="1604823036232" />
-    <state x="552" y="-826" key="Vcs.Push.Dialog.v2" timestamp="1604921457945">
-      <screen x="0" y="-1080" width="1920" height="1040" />
+    <state x="368" y="149" key="Vcs.Push.Dialog.v2" timestamp="1605338434325">
+      <screen x="0" y="0" width="1280" height="680" />
     </state>
     <state x="552" y="-826" key="Vcs.Push.Dialog.v2/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1604921457945" />
-    <state x="368" y="149" key="Vcs.Push.Dialog.v2/0.0.1280.680@0.0.1280.680" timestamp="1604836068593" />
+    <state x="368" y="149" key="Vcs.Push.Dialog.v2/0.0.1280.680@0.0.1280.680" timestamp="1605338434325" />
     <state x="485" y="286" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1604836165119">
       <screen x="0" y="0" width="1280" height="680" />
     </state>
