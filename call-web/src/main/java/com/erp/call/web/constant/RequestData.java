@@ -40,7 +40,7 @@ public class RequestData {
         }
         req.setImages(images);
         // 商品变体
-        if (StringUtils.isNotEmpty(customDefs.getCode())) {
+        if (null != customDefs && StringUtils.isNotEmpty(customDefs.getCode())) {
             customDefs.setValueOptions(customDefs.getValueOptions().replace("，", ","));
             CustomDef customDef = new CustomDef();
             BeanUtils.copyProperties(customDefs, customDef);
@@ -65,7 +65,6 @@ public class RequestData {
             }
             req.setChildren(customChildrens);
         }
-        System.out.println(JSON.toJSONString(req));
         return req;
     }
 
