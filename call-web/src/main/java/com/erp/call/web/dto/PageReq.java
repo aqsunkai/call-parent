@@ -19,4 +19,8 @@ public class PageReq {
 
     private String productNameFile;
 
+    private Boolean customDefCheck;
+
+    private CustomDef customDefs;
+
 }

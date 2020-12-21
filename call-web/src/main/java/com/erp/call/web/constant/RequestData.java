@@ -1,16 +1,19 @@
 package com.erp.call.web.constant;
 
+import com.alibaba.fastjson.JSON;
 import com.erp.call.web.dto.*;
 import com.erp.call.web.util.IDGeneratorUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 import java.util.Map;
 
 public class RequestData {
 
-    public static ProductReq getProductReq(String name, Double price, String md5, List<String> slaveMd5) {
+    public static ProductReq getProductReq(CustomDef customDefs, String name, Double price, String md5, List<String> slaveMd5) {
         ProductReq req = new ProductReq();
         req.setCurrency("CNY");
         req.setDimensionsUnit("CM");
@@ -36,6 +39,33 @@ public class RequestData {
             images.add(image);
         }
         req.setImages(images);
+        // 商品变体
+        if (StringUtils.isNotEmpty(customDefs.getCode())) {
+            customDefs.setValueOptions(customDefs.getValueOptions().replace("，", ","));
+            CustomDef customDef = new CustomDef();
+            BeanUtils.copyProperties(customDefs, customDef);
+            customDef.setSeq(1);
+            req.setVariationDataCustomDefs(Lists.newArrayList(customDef));
+
+            String[] valueOptions = customDef.getValueOptions().split(",");
+
+            List<CustomChildren> customChildrens = Lists.newArrayList();
+            int seq = 1;
+            for (String valueOption : valueOptions) {
+                CustomChildren.VariationData.Item item = new CustomChildren.VariationData.Item();
+                item.setCode(customDef.getCode());
+                item.setValue(valueOption);
+                CustomChildren.VariationData variationData = new CustomChildren.VariationData();
+                variationData.setItems(Lists.newArrayList(item));
+                CustomChildren customChildren = new CustomChildren();
+                customChildren.setVariationData(variationData);
+                customChildren.setSeq(seq);
+                customChildrens.add(customChildren);
+                seq++;
+            }
+            req.setChildren(customChildrens);
+        }
+        System.out.println(JSON.toJSONString(req));
         return req;
     }
 

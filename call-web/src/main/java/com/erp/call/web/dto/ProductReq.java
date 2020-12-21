@@ -12,7 +12,7 @@ public class ProductReq {
 
     private Integer catalogId;
 
-    private List<String> children = new ArrayList<>();
+    private List<CustomChildren> children = new ArrayList<>();
 
     private Double costPrice;
 
@@ -52,7 +52,7 @@ public class ProductReq {
 
     private String title;
 
-    private List<String> variationDataCustomDefs = new ArrayList<>();
+    private List<CustomDef> variationDataCustomDefs = new ArrayList<>();
 
     private String weightUnit;
 

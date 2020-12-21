@@ -31,6 +31,14 @@
   <el-form-item label="txt文件名" prop="productNameFile" v-if="ruleForm.type==1">
     <el-input v-model="ruleForm.productNameFile"></el-input>
   </el-form-item>
+  <el-form-item label="商品变体" prop="customDefs">
+    <div>
+      <el-checkbox v-model="ruleForm.customDefCheck">使用</el-checkbox>
+      <el-input v-model="ruleForm.customDefs.code" style="width: 150px"></el-input>
+      <el-input v-model="ruleForm.customDefs.name" style="width: 150px"></el-input>
+      <el-input v-model="ruleForm.customDefs.valueOptions" style="width: 286px"></el-input>
+    </div>
+  </el-form-item>
   <el-form-item label="Authorization" prop="cookie">
     <el-input type="textarea" rows="12" v-model="ruleForm.cookie"></el-input>
   </el-form-item>
@@ -77,7 +85,13 @@ export default {
         property: '属性图',
         attachProperty: '主图',
         productNameFile: '下图记录',
-        cookie: ''
+        cookie: '',
+        customDefCheck: true,
+        customDefs: {
+          code: 'Size',
+          name: '尺寸',
+          valueOptions: 'M,L'
+        }
       },
       rules: {
         filePath: [
@@ -108,7 +122,16 @@ export default {
     submitForm (formName) {
       if (this.ruleForm.type === 1 && !this.ruleForm.productNameFile) {
         Message({
-          message: 'txt文件名',
+          message: '读取txt文件时需要输入txt文件名',
+          type: 'error',
+          duration: 3 * 1000,
+          showClose: true
+        })
+        return
+      }
+      if (this.ruleForm.customDefCheck === true && !(this.ruleForm.customDefs.code && this.ruleForm.customDefs.name && this.ruleForm.customDefs.valueOptions)) {
+        Message({
+          message: '商品变体需要全部输入',
           type: 'error',
           duration: 3 * 1000,
           showClose: true
