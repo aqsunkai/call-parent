@@ -78,69 +78,84 @@ public class CallService {
                 String fileName = productFile.getName();
                 String productName = null;
                 Double price = null;
-                Map<String, String> masterMd5 = Maps.newHashMap();
-                Map<String, String> slaveMd5 = Maps.newHashMap();
-                String firstSlaveMd5 = null;
-                String firstSlaveFileName = null;
+                Map<String, String> masterName = Maps.newLinkedHashMap();
                 boolean upload = true;
-                pro:
+                List<File> slaveFiles = Lists.newArrayList();
+                List<String> slaveFileMd5 = Lists.newArrayList();
                 for (File imageFile : imageFiles) {
                     if (pageReq.getProperty().equals(imageFile.getName())) {
                         File[] masterFiles = imageFile.listFiles();
                         if (null == masterFiles || masterFiles.length == 0) {
-                            logger.warn("文件夹名称：{}，{}目录下没有图片，正常上传", fileName, pageReq.getProperty());
-                            continue;
+                            if (pageReq.getAttachType() == 1) {
+                                logger.warn("文件夹名称：{}，{}目录下没有图片，该文件夹下所有产品都不会创建", fileName, pageReq.getProperty());
+                                upload = false;
+                                break;
+                            } else {
+                                // 等于0、2、3时忽略列表文件夹
+                                logger.warn("文件夹名称：{}，{}目录下没有图片", fileName, pageReq.getProperty());
+                                continue;
+                            }
                         }
                         logger.info("文件夹名称：{}，{}目录下图片开始上传", fileName, pageReq.getProperty());
                         for (File masterFile : masterFiles) {
-                            // 上传属性图图片
+                            // 上传列表文件夹图片
                             UploadRes res = httpClientHelper.postFile(UPLOAD_URL, masterFile, "file", getRequestHeader(pageReq.getCookie()), UploadRes.class);
                             if (null != res && Boolean.TRUE.equals(res.getRet())) {
-                                masterMd5.put(res.getInfo().getMd5(), masterFile.getName().substring(0, masterFile.getName().lastIndexOf(".")));
+                                masterName.put(res.getInfo().getMd5(), masterFile.getName().substring(0, masterFile.getName().lastIndexOf(".")));
+                                logger.info("文件夹名称：{}，{}目录，上传{}图片成功", fileName, pageReq.getProperty(), masterFile.getName());
+                                sleepMoment();
                             } else {
-                                logger.warn("文件夹名称：{}，{}目录，上传{}图片失败，该文件夹下所有产品都不会创建", fileName, pageReq.getProperty(), masterFile.getName());
-                                upload = false;
-                                break pro;
+                                logger.warn("文件夹名称：{}，{}目录，上传{}图片失败", fileName, pageReq.getProperty(), masterFile.getName());
+                                sleepMomentFail();
                             }
-                            sleepMoment();
                         }
                     } else if (pageReq.getAttachProperty().equals(imageFile.getName())) {
-                        File[] slaveFiles = imageFile.listFiles();
-                        if (null == slaveFiles || slaveFiles.length == 0) {
-                            logger.warn("文件夹名称：{}，{}目录下没有图片，正常上传", fileName, pageReq.getAttachProperty());
+                        List<File> masterFiles = Lists.newArrayList();
+                        File[] listFiles = imageFile.listFiles();
+                        assert listFiles != null;
+                        if (pageReq.getAttachType() == 0) {
+                            // 列表文件夹和详情文件夹平级，即两个文件夹都作为主图
+                            masterFiles.addAll(Arrays.asList(listFiles));
+                        } else if (pageReq.getAttachType() == 1) {
+                            // 列表文件夹作为主图，详情文件夹作为附图
+                            slaveFiles.addAll(Arrays.asList(listFiles));
+                            continue;
+                        } else if (pageReq.getAttachType() == 2) {
+                            // 列表文件夹和详情文件夹第一张作为主图，详情文件夹剩下的图片作为附图
+                            boolean flag = true;
+                            for (File listFile : listFiles) {
+                                if (flag) {
+                                    masterFiles.add(listFile);
+                                } else {
+                                    slaveFiles.add(listFile);
+                                }
+                                flag = false;
+                            }
+                        } else if (pageReq.getAttachType() == 3) {
+                            // 列表文件夹和详情文件夹第一张作为主图，详情文件夹剩下的图片丢弃
+                            masterFiles.add(listFiles[0]);
+                        }
+                        if (masterFiles.size() == 0) {
+                            logger.warn("文件夹名称：{}，{}目录下没有图片", fileName, pageReq.getAttachProperty());
                             continue;
                         }
                         logger.info("文件夹名称：{}，{}目录下图片开始上传", fileName, pageReq.getAttachProperty());
-                        for (File slaveFile : slaveFiles) {
+                        for (File masterFile : masterFiles) {
                             // 上传主图图片
-                            UploadRes res = httpClientHelper.postFile(UPLOAD_URL, slaveFile, "file", getRequestHeader(pageReq.getCookie()), UploadRes.class);
+                            UploadRes res = httpClientHelper.postFile(UPLOAD_URL, masterFile, "file", getRequestHeader(pageReq.getCookie()), UploadRes.class);
                             if (null != res && Boolean.TRUE.equals(res.getRet())) {
-                                slaveMd5.put(res.getInfo().getMd5(), slaveFile.getName().substring(0, slaveFile.getName().lastIndexOf(".")));
-                                if (StringUtils.isEmpty(firstSlaveMd5)) {
-                                    firstSlaveMd5 = res.getInfo().getMd5();
-                                    firstSlaveFileName = slaveFile.getName();
-                                }
+                                masterName.put(res.getInfo().getMd5(), masterFile.getName().substring(0, masterFile.getName().lastIndexOf(".")));
+                                slaveFileMd5.add(res.getInfo().getMd5());
+                                logger.info("文件夹名称：{}，{}目录，上传{}图片成功", fileName, pageReq.getAttachProperty(), masterFile.getName());
+                                sleepMoment();
                             } else {
-                                logger.warn("文件夹名称：{}，{}目录，上传{}图片失败，该文件夹下所有产品都不会创建", fileName, pageReq.getAttachProperty(), slaveFile.getName());
-                                upload = false;
-                                break pro;
+                                logger.warn("文件夹名称：{}，{}目录，上传{}图片失败", fileName, pageReq.getAttachProperty(), masterFile.getName());
+                                sleepMomentFail();
                             }
-                            sleepMoment();
                         }
                     } else if (pageReq.getType() == 1 && imageFile.getName().startsWith(pageReq.getProductNameFile())) {
-                        // 产品名称文件夹名称
-                        String txt = FileUtil.txt2String(fileName, imageFile);
-                        if (StringUtils.isNotEmpty(txt)) {
-                            if (txt.contains("@")) {
-                                price = Double.valueOf(txt.split("@")[0]);
-                                productName = txt.split("@")[1];
-                                productName = productName.split("- AliExpress")[0];
-                                productName = productName.substring(0, productName.length() - 5);
-                            } else {
-                                productName = txt.split("- AliExpress")[0];
-                                productName = productName.substring(0, productName.length() - 5);
-                            }
-                        }
+                        // txt文件夹名称
+                        productName = FileUtil.readFirstLine(fileName, imageFile);
                         if (StringUtils.isEmpty(productName)) {
                             logger.warn("文件夹名称：{}，读取{}文件，产品名称不存在，该文件夹下所有产品都不会创建", fileName, pageReq.getProductNameFile());
                             upload = false;
@@ -148,31 +163,52 @@ public class CallService {
                         }
                     }
                 }
-                if (!upload) {
+                if (!upload || masterName.size() == 0) {
                     uploadFail(pageReq, fileName);
                     continue;
                 }
-                boolean slaveFlag = false;
-                if (masterMd5.isEmpty() && !slaveMd5.isEmpty()) {
-                    logger.warn("文件夹名称：{}，{}目录不存在图片，使用{}目录下{}图片作为属性图", fileName, pageReq.getProperty(), pageReq.getAttachProperty(), firstSlaveFileName);
-                    masterMd5.put(firstSlaveMd5, slaveMd5.get(firstSlaveMd5));
-                    slaveMd5.remove(firstSlaveMd5);
-                    slaveFlag = true;
-                }
-                if (masterMd5.isEmpty()) {
-                    logger.warn("文件夹名称：{}，{}目录和{}目录都不存在图片，已自动忽略该文件夹", fileName, pageReq.getProperty(), pageReq.getAttachProperty());
-                    continue;
-                }
                 int failCount = 0;
-                for (Map.Entry<String, String> md5 : masterMd5.entrySet()) {
-                    String product = pageReq.getType() == 1 ? productName : md5.getValue();
-                    ProductRes res = httpClientHelper.put(PRODUCT_URL, RequestData.getProductReq(product, price, md5.getKey(),
-                            new ArrayList<>(slaveMd5.keySet())), getRequestHeader(pageReq.getCookie()), ProductRes.class);
-                    if (null == res || Boolean.TRUE.equals(res.getCheckFail())) {
-                        logger.warn("文件夹名称：{}，{}目录下{}产品上传失败，自动上传下一个", fileName, slaveFlag ? pageReq.getAttachProperty() : pageReq.getProperty(), md5.getValue());
-                        failCount++;
+                for (Map.Entry<String, String> master : masterName.entrySet()) {
+                    boolean uploadSlave = true;
+                    Map<String, String> slaveName = Maps.newHashMap();
+                    if (slaveFiles.size() > 0) {
+                        // 上传主图图片
+                        logger.info("文件夹名称：{}，{}目录下图片开始上传{}产品所需图片", fileName, pageReq.getAttachProperty(), master.getValue());
+                        for (File slaveFile : slaveFiles) {
+                            UploadRes res = httpClientHelper.postFile(UPLOAD_URL, slaveFile, "file", getRequestHeader(pageReq.getCookie()), UploadRes.class);
+                            if (null != res && Boolean.TRUE.equals(res.getRet())) {
+                                slaveName.put(res.getInfo().getMd5(), slaveFile.getName().substring(0, slaveFile.getName().lastIndexOf(".")));
+                                logger.info("文件夹名称：{}，{}目录，上传{}图片成功，{}产品", fileName, pageReq.getAttachProperty(), slaveFile.getName(), master.getValue());
+                                sleepMoment();
+                            } else {
+                                logger.warn("文件夹名称：{}，{}目录，上传{}图片失败，导致{}产品无法创建", fileName, pageReq.getAttachProperty(), slaveFile.getName(), master.getValue());
+                                uploadSlave = false;
+                                break;
+                            }
+                        }
                     }
-                    sleepMoment();
+                    if (!uploadSlave) {
+                        uploadFail(pageReq, fileName);
+                        continue;
+                    }
+                    String product = pageReq.getType() == 1 ? productName : master.getValue();
+                    ProductRes res = httpClientHelper.put(PRODUCT_URL, RequestData.getProductReq(product, price, master.getKey(),
+                            new ArrayList<>(slaveName.keySet())), getRequestHeader(pageReq.getCookie()), ProductRes.class);
+                    if (null == res || Boolean.TRUE.equals(res.getCheckFail())) {
+                        if (slaveFileMd5.contains(master.getKey())) {
+                            logger.warn("文件夹名称：{}，{}目录下{}产品上传失败", fileName, pageReq.getAttachProperty(), master.getValue());
+                        } else {
+                            logger.warn("文件夹名称：{}，{}目录下{}产品上传失败", fileName, pageReq.getProperty(), master.getValue());
+                        }
+                        failCount++;
+                    } else {
+                        if (slaveFileMd5.contains(master.getKey())) {
+                            logger.info("文件夹名称：{}，{}目录下{}产品上传成功", fileName, pageReq.getAttachProperty(), master.getValue());
+                        } else {
+                            logger.info("文件夹名称：{}，{}目录下{}产品上传成功", fileName, pageReq.getProperty(), master.getValue());
+                        }
+                    }
+                    sleepMomentForProduct();
                 }
                 if (failCount == 0) {
                     logger.info("文件夹名称：{}，所有产品都上传成功", fileName);
@@ -181,9 +217,10 @@ public class CallService {
                     logger.warn("文件夹名称：{}，有{}个产品上传失败", fileName, failCount);
                     uploadFail(pageReq, fileName);
                 }
+                sleepMomentFail();
             }
         } catch (Exception e) {
-            logger.error("异步上传产品失败", e);
+            logger.error("异步创建产品失败", e);
         } finally {
             runningMap.put(pageReq.getFilePath(), false);
         }
@@ -373,7 +410,7 @@ public class CallService {
     }
 
     private void sleepMoment() throws InterruptedException {
-        TimeUnit.SECONDS.sleep(5);
+        TimeUnit.SECONDS.sleep(2);
     }
 
     private void sleepMomentForProduct() throws InterruptedException {
@@ -381,7 +418,7 @@ public class CallService {
     }
 
     private void sleepMomentFail() throws InterruptedException {
-        TimeUnit.SECONDS.sleep(30);
+        TimeUnit.SECONDS.sleep(10);
     }
 
     /**

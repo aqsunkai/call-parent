@@ -27,13 +27,13 @@ public class CallController {
             return Result.error("填写filePath");
         }
         if (StringUtils.isEmpty(pageReq.getProperty())) {
-            return Result.error("填写属性图所在文件夹名称");
+            return Result.error("填写列表文件夹名称");
         }
         if (StringUtils.isEmpty(pageReq.getAttachProperty())) {
-            return Result.error("填写主图所在文件夹名称");
+            return Result.error("填写详情文件夹名称");
         }
         if (pageReq.getType() == 1 && StringUtils.isEmpty(pageReq.getProductNameFile())) {
-            return Result.error("填写产品&价格文件名");
+            return Result.error("填写txt文件名");
         }
         pageReq.setCookie(pageReq.getCookie().trim());
         callService.sendProduct(pageReq);
@@ -49,13 +49,13 @@ public class CallController {
             return Result.error("填写filePath");
         }
         if (StringUtils.isEmpty(pageReq.getProperty())) {
-            return Result.error("填写属性图所在文件夹名称");
+            return Result.error("填写列表文件夹名称");
         }
         if (StringUtils.isEmpty(pageReq.getAttachProperty())) {
-            return Result.error("填写主图所在文件夹名称");
+            return Result.error("填写详情文件夹名称");
         }
         if (pageReq.getType() == 1 && StringUtils.isEmpty(pageReq.getProductNameFile())) {
-            return Result.error("填写产品文件名");
+            return Result.error("填写txt文件名");
         }
         pageReq.setCookie(pageReq.getCookie().trim());
         callService.sendErpProduct(pageReq);

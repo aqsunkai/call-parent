@@ -1,5 +1,7 @@
 <template>
-<el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="150px" class="xiaomi-ruleForm" size="small" >
+<div>
+<h2 style="text-align: center;">洛菲纳跨境电商智慧生态系统</h2>
+<el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="150px" class="lonfenner-product-ruleForm" size="small" >
   <el-form-item label="文件根路径" prop="filePath">
     <el-input v-model="ruleForm.filePath"></el-input>
   </el-form-item>
@@ -29,8 +31,8 @@
   <el-form-item label="txt文件名" prop="productNameFile" v-if="ruleForm.type==1">
     <el-input v-model="ruleForm.productNameFile"></el-input>
   </el-form-item>
-  <el-form-item label="cookie" prop="cookie">
-    <el-input type="textarea" rows="2" v-model="ruleForm.cookie"></el-input>
+  <el-form-item label="Authorization" prop="cookie">
+    <el-input type="textarea" rows="12" v-model="ruleForm.cookie"></el-input>
   </el-form-item>
   <el-form-item class="content_button">
     <el-button type="primary" @click="submitForm('ruleForm')">创建产品</el-button>
@@ -55,10 +57,11 @@
   </span>
 </el-dialog>
 </el-form>
+</div>
 </template>
 <script>
 import { Message } from 'element-ui'
-import { erpProductSend, productResult } from '@/api'
+import { productSend, productResult } from '@/api'
 export default {
   data () {
     return {
@@ -90,7 +93,7 @@ export default {
           { required: true, message: '请选择文件夹关系', trigger: 'blur' }
         ],
         cookie: [
-          { required: true, message: '请输入cookie', trigger: 'blur' }
+          { required: true, message: '请输入Authorization', trigger: 'blur' }
         ]
       }
     }
@@ -105,7 +108,7 @@ export default {
     submitForm (formName) {
       if (this.ruleForm.type === 1 && !this.ruleForm.productNameFile) {
         Message({
-          message: '请输入产品&价格文件名',
+          message: 'txt文件名',
           type: 'error',
           duration: 3 * 1000,
           showClose: true
@@ -114,7 +117,7 @@ export default {
       }
       this.$refs[formName].validate(async (valid) => {
         if (valid) {
-          const res = await erpProductSend(this.ruleForm)
+          const res = await productSend(this.ruleForm)
           if (res.status) {
             this.dialogVisible = true
             this.running = true
@@ -147,7 +150,7 @@ export default {
 }
 </script>
 <style lang="scss">
-.xiaomi-ruleForm{
+.lonfenner-product-ruleForm{
   width: 800px;
   margin: 0 auto;
   .content_button{
