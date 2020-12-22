@@ -192,7 +192,7 @@ public class CallService {
                         continue;
                     }
                     String product = pageReq.getType() == 1 ? productName : master.getValue();
-                    ProductRes res = httpClientHelper.put(PRODUCT_URL, RequestData.getProductReq(pageReq.getCustomDefs(), product, price, master.getKey(),
+                    ProductRes res = httpClientHelper.put(PRODUCT_URL, RequestData.getProductReq(pageReq, product, price, master.getKey(),
                             new ArrayList<>(slaveName.keySet())), getRequestHeader(pageReq.getCookie()), ProductRes.class);
                     if (null == res || Boolean.TRUE.equals(res.getCheckFail())) {
                         if (slaveFileMd5.contains(master.getKey())) {

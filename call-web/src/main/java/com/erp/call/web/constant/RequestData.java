@@ -1,6 +1,5 @@
 package com.erp.call.web.constant;
 
-import com.alibaba.fastjson.JSON;
 import com.erp.call.web.dto.*;
 import com.erp.call.web.util.IDGeneratorUtil;
 import com.google.common.collect.Lists;
@@ -13,7 +12,7 @@ import java.util.Map;
 
 public class RequestData {
 
-    public static ProductReq getProductReq(CustomDef customDefs, String name, Double price, String md5, List<String> slaveMd5) {
+    public static ProductReq getProductReq(PageReq pageReq, String name, Double price, String md5, List<String> slaveMd5) {
         ProductReq req = new ProductReq();
         req.setCurrency("CNY");
         req.setDimensionsUnit("CM");
@@ -40,7 +39,8 @@ public class RequestData {
         }
         req.setImages(images);
         // 商品变体
-        if (null != customDefs && StringUtils.isNotEmpty(customDefs.getCode())) {
+        CustomDef customDefs = pageReq.getCustomDefs();
+        if (Boolean.TRUE.equals(pageReq.getCustomDefCheck()) && null != customDefs && StringUtils.isNotEmpty(customDefs.getCode())) {
             customDefs.setValueOptions(customDefs.getValueOptions().replace("，", ","));
             CustomDef customDef = new CustomDef();
             BeanUtils.copyProperties(customDefs, customDef);

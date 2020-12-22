@@ -34,8 +34,8 @@
   <el-form-item label="商品变体" prop="customDefs">
     <div>
       <el-checkbox v-model="ruleForm.customDefCheck">使用</el-checkbox>
-      <el-input v-model="ruleForm.customDefs.code" style="width: 150px"></el-input>
-      <el-input v-model="ruleForm.customDefs.name" style="width: 150px"></el-input>
+      <el-input v-model="ruleForm.customDefs.code" style="width: 140px;margin-left: 20px;"></el-input>
+      <el-input v-model="ruleForm.customDefs.name" style="width: 140px"></el-input>
       <el-input v-model="ruleForm.customDefs.valueOptions" style="width: 286px"></el-input>
     </div>
   </el-form-item>
@@ -140,20 +140,34 @@ export default {
       }
       this.$refs[formName].validate(async (valid) => {
         if (valid) {
-          const res = await productSend(this.ruleForm)
-          if (res.status) {
-            this.dialogVisible = true
-            this.running = true
-            this.failName = []
-            this.uploadName = []
-            this.runningStatusTimer = setInterval(() => {
-              this.getProcessRunningStatus()
-            }, 5000)
+          if (this.ruleForm.customDefCheck !== true && (this.ruleForm.customDefs.code || this.ruleForm.customDefs.name || this.ruleForm.customDefs.valueOptions)) {
+            this.$confirm('商品变体输入了内容，但未选择使用，确定后则不会创建商品变体', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              this.sendProduct()
+            }).catch(() => {
+            })
+          } else {
+            this.sendProduct()
           }
         } else {
           return false
         }
       })
+    },
+    async sendProduct () {
+      const res = await productSend(this.ruleForm)
+      if (res.status) {
+        this.dialogVisible = true
+        this.running = true
+        this.failName = []
+        this.uploadName = []
+        this.runningStatusTimer = setInterval(() => {
+          this.getProcessRunningStatus()
+        }, 5000)
+      }
     },
     async getProcessRunningStatus () {
       const res = await productResult(this.ruleForm)
