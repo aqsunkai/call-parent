@@ -2,11 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e5a3e179-ae63-4343-828b-9a02060be9bb" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/js/3.f844e59f310d8cab0d9f.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/js/3.f844e59f310d8cab0d9f.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/js/manifest.09b0e6b17de3b33bd164.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/js/manifest.09b0e6b17de3b33bd164.js.map" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-client/src/views/lonfenner_product.vue" beforeDir="false" afterPath="$PROJECT_DIR$/call-client/src/views/lonfenner_product.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-client/src/views/product_send.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/constant/RequestData.java" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/constant/RequestData.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/service/CallService.java" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/service/CallService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/js/3.b6fd2c33df3a86e7a905.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/js/3.b6fd2c33df3a86e7a905.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/js/manifest.329f35dec25000a8d974.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/js/manifest.329f35dec25000a8d974.js.map" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -240,7 +245,7 @@
       <workItem from="1605513201188" duration="2142000" />
       <workItem from="1608447864217" duration="4915000" />
       <workItem from="1608546401764" duration="9047000" />
-      <workItem from="1608632507910" duration="1519000" />
+      <workItem from="1608632507910" duration="2410000" />
     </task>
     <task id="LOCAL-00001" summary="提交">
       <created>1588763245473</created>
@@ -375,7 +380,14 @@
       <option name="project" value="LOCAL" />
       <updated>1608557227653</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="商品变体">
+      <created>1608634299187</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1608634299187</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -407,29 +419,30 @@
     <MESSAGE value="test" />
     <MESSAGE value="增加主图的产品方式：&#10;0：主图和属性图平级&#10;1：主图是属性图的子图" />
     <MESSAGE value="增加详情文件夹第一张图片作为主图逻辑" />
-    <MESSAGE value="npm run build" />
     <MESSAGE value="洛菲纳接口地址改变" />
     <MESSAGE value="洛菲纳产品上传" />
-    <option name="LAST_COMMIT_MESSAGE" value="洛菲纳产品上传" />
+    <MESSAGE value="商品变体" />
+    <MESSAGE value="npm run build" />
+    <option name="LAST_COMMIT_MESSAGE" value="npm run build" />
   </component>
   <component name="WindowStateProjectService">
     <state x="414" y="-904" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1600250965046">
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
     <state x="414" y="-904" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1600250965046" />
-    <state x="518" y="-966" key="CommitChangelistDialog2" timestamp="1608557227104">
+    <state x="518" y="-966" key="CommitChangelistDialog2" timestamp="1608634887935">
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
-    <state x="518" y="-966" key="CommitChangelistDialog2/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1608557227104" />
+    <state x="518" y="-966" key="CommitChangelistDialog2/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1608634887935" />
     <state x="345" y="0" key="CommitChangelistDialog2/0.0.1280.680@0.0.1280.680" timestamp="1608457206997" />
     <state width="452" height="466" key="DebuggerActiveHint" timestamp="1608634059405">
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
     <state width="452" height="466" key="DebuggerActiveHint/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1608634059405" />
-    <state x="363" y="-1002" key="DiffContextDialog" timestamp="1608557221875">
+    <state x="363" y="-1002" key="DiffContextDialog" timestamp="1608634287563">
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
-    <state x="363" y="-1002" key="DiffContextDialog/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1608557221875" />
+    <state x="363" y="-1002" key="DiffContextDialog/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1608634287563" />
     <state x="242" y="51" key="DiffContextDialog/0.0.1280.680@0.0.1280.680" timestamp="1608457176747" />
     <state width="1879" height="390" key="GridCell.Tab.0.bottom" timestamp="1608634236844">
       <screen x="0" y="-1080" width="1920" height="1040" />
@@ -496,15 +509,15 @@
     </state>
     <state width="747" height="698" key="SwitcherDM/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1608632584673" />
     <state width="498" height="456" key="SwitcherDM/0.0.1280.680@0.0.1280.680" timestamp="1604823036232" />
-    <state x="552" y="-826" key="Vcs.Push.Dialog.v2" timestamp="1608557228752">
+    <state x="552" y="-826" key="Vcs.Push.Dialog.v2" timestamp="1608634300682">
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
-    <state x="552" y="-826" key="Vcs.Push.Dialog.v2/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1608557228752" />
+    <state x="552" y="-826" key="Vcs.Push.Dialog.v2/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1608634300682" />
     <state x="368" y="149" key="Vcs.Push.Dialog.v2/0.0.1280.680@0.0.1280.680" timestamp="1608457209279" />
-    <state x="728" y="-642" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1608634232620">
+    <state x="728" y="-642" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1608634319986">
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
-    <state x="728" y="-642" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1608634232620" />
+    <state x="728" y="-642" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1608634319986" />
     <state x="485" y="286" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1280.680@0.0.1280.680" timestamp="1608457095494" />
     <state x="316" y="86" width="648" height="508" key="find.popup" timestamp="1608455152675">
       <screen x="0" y="0" width="1280" height="680" />
@@ -514,16 +527,5 @@
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
     <state x="623" y="-855" width="672" height="678" key="search.everywhere.popup/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1600251240008" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/constant/RequestData.java</url>
-          <line>42</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
