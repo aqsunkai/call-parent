@@ -72,12 +72,14 @@ public class CallService {
         try {
             File[] files = file.listFiles();
             assert files != null;
+            int count = 0;
+            int length = files.length;
             for (File productFile : files) {
+                count++;
                 File[] imageFiles = productFile.listFiles();
                 assert imageFiles != null;
                 String fileName = productFile.getName();
                 String productName = null;
-                Double price = null;
                 Map<String, String> masterName = Maps.newLinkedHashMap();
                 boolean upload = true;
                 List<File> slaveFiles = Lists.newArrayList();
@@ -192,6 +194,7 @@ public class CallService {
                         continue;
                     }
                     String product = pageReq.getType() == 1 ? productName : master.getValue();
+                    Double price = pageReq.getPriceType() == 1 ? null : getPriceFromPictureName(fileName, pageReq, master, slaveFileMd5);
                     ProductRes res = httpClientHelper.put(PRODUCT_URL, RequestData.getProductReq(pageReq, product, price, master.getKey(),
                             new ArrayList<>(slaveName.keySet())), getRequestHeader(pageReq.getCookie()), ProductRes.class);
                     if (null == res || Boolean.TRUE.equals(res.getCheckFail())) {
@@ -217,13 +220,32 @@ public class CallService {
                     logger.warn("文件夹名称：{}，有{}个产品上传失败", fileName, failCount);
                     uploadFail(pageReq, fileName);
                 }
-                sleepMomentFail();
+                if (count < length) {
+                    sleepMomentFail();
+                }
             }
         } catch (Exception e) {
             logger.error("异步创建产品失败", e);
         } finally {
             runningMap.put(pageReq.getFilePath(), false);
         }
+    }
+
+    private Double getPriceFromPictureName(String fileName, PageReq pageReq, Map.Entry<String, String> master, List<String> slaveFileMd5) {
+        try {
+            String price = master.getValue().replace("（", "(");
+            if (price.contains("(")) {
+                price = price.split("\\(")[0];
+            }
+            return Double.valueOf(price);
+        } catch (Exception e) {
+            if (slaveFileMd5.contains(master.getKey())) {
+                logger.warn("文件夹名称：{}，{}目录下{}产品名称不是数字，该产品不生成价格", fileName, pageReq.getAttachProperty(), master.getValue());
+            } else {
+                logger.warn("文件夹名称：{}，{}目录下{}产品名称不是数字，该产品不生成价格", fileName, pageReq.getProperty(), master.getValue());
+            }
+        }
+        return null;
     }
 
     private void createErpProduct(PageReq pageReq, File file) {

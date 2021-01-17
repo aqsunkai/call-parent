@@ -7,6 +7,8 @@ public class PageReq {
 
     private Integer type;
 
+    private Integer priceType;
+
     private Integer attachType;
 
     private String filePath;

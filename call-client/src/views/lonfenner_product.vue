@@ -31,6 +31,12 @@
   <el-form-item label="txt文件名" prop="productNameFile" v-if="ruleForm.type==1">
     <el-input v-model="ruleForm.productNameFile"></el-input>
   </el-form-item>
+  <el-form-item label="产品价格" prop="priceType">
+    <el-radio-group v-model="ruleForm.priceType">
+      <el-radio :label="0">使用图片名称</el-radio>
+      <el-radio :label="1">默认无价格</el-radio>
+    </el-radio-group>
+  </el-form-item>
   <el-form-item label="商品变体" prop="customDefs">
     <div>
       <el-checkbox v-model="ruleForm.customDefCheck">使用</el-checkbox>
@@ -80,6 +86,7 @@ export default {
       uploadName: [],
       ruleForm: {
         type: 1,
+        priceType: 1,
         attachType: '',
         filePath: '',
         property: '属性图',
