@@ -194,8 +194,9 @@ public class CallService {
                         continue;
                     }
                     String product = pageReq.getType() == 1 ? productName : master.getValue();
-                    Double price = pageReq.getPriceType() == 1 ? null : getPriceFromPictureName(fileName, pageReq, master, slaveFileMd5);
-                    ProductRes res = httpClientHelper.put(PRODUCT_URL, RequestData.getProductReq(pageReq, product, price, master.getKey(),
+                    Double price = pageReq.getPriceType() == 0 ? getPriceFromPictureName(fileName, pageReq, master, slaveFileMd5) : null;
+                    String brandName = pageReq.getPriceType() == 1 ? master.getValue() : null;
+                    ProductRes res = httpClientHelper.put(PRODUCT_URL, RequestData.getProductReq(pageReq, product, brandName, price, master.getKey(),
                             new ArrayList<>(slaveName.keySet())), getRequestHeader(pageReq.getCookie()), ProductRes.class);
                     if (null == res || Boolean.TRUE.equals(res.getCheckFail())) {
                         if (slaveFileMd5.contains(master.getKey())) {

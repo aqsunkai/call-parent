@@ -12,11 +12,13 @@ import java.util.Map;
 
 public class RequestData {
 
-    public static ProductReq getProductReq(PageReq pageReq, String name, Double price, String md5, List<String> slaveMd5) {
+    public static ProductReq getProductReq(PageReq pageReq, String name, String brandName,
+                                           Double price, String md5, List<String> slaveMd5) {
         ProductReq req = new ProductReq();
         req.setCurrency("CNY");
         req.setDimensionsUnit("CM");
         req.setName(name);
+        req.setBrandName(brandName);
         req.setWeightUnit("G");
         req.setSalePrice(price);
 

@@ -33,8 +33,9 @@
   </el-form-item>
   <el-form-item label="产品价格" prop="priceType">
     <el-radio-group v-model="ruleForm.priceType">
-      <el-radio :label="0">使用图片名称</el-radio>
-      <el-radio :label="1">默认无价格</el-radio>
+      <el-radio :label="0">使用图片名称,取(前数字</el-radio>
+      <el-radio :label="1">使用图片名称,放入品牌名</el-radio>
+      <el-radio :label="2">默认无价格</el-radio>
     </el-radio-group>
   </el-form-item>
   <el-form-item label="商品变体" prop="customDefs">
@@ -55,6 +56,8 @@
   <el-dialog
   title="正在刷新创建的产品"
   :visible.sync="dialogVisible"
+  :close-on-click-modal="false"
+  :close-on-press-escape="false"
   width="40%" center>
   <p v-if="running" style="color:#409EFF;text-align:center">正在创建</p>
   <p v-if="!running" style="color:#67C23A;text-align:center">创建完成</p>
@@ -86,14 +89,14 @@ export default {
       uploadName: [],
       ruleForm: {
         type: 1,
-        priceType: 1,
+        priceType: 2,
         attachType: '',
         filePath: '',
         property: '属性图',
         attachProperty: '主图',
         productNameFile: '下图记录',
         cookie: '',
-        customDefCheck: true,
+        customDefCheck: false,
         customDefs: {
           code: 'Size',
           name: '尺寸',
