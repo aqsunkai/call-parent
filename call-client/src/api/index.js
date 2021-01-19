@@ -28,3 +28,10 @@ export function splitFileResult (params) {
     params: params
   })
 }
+export function priceCalculate (data) {
+  return Axios({
+    url: '/api/price/calculate',
+    method: 'post',
+    data: data
+  })
+}

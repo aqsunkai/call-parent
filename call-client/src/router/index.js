@@ -17,11 +17,11 @@ export default new Router({
           icon: 'el-icon-upload2',
           component: () => import('@/views/lonfenner_product')
         },
-        // {path: '/xiaomiErp',
-        //   name: '小米erp',
-        //   icon: 'el-icon-upload2',
-        //   component: () => import('@/views/erp_product')
-        // },
+        {path: '/price',
+          name: '修改价格',
+          icon: 'el-icon-edit',
+          component: () => import('@/views/price_calculate')
+        },
         {path: '/splitFile',
           name: '拆分文件',
           icon: 'el-icon-files',
