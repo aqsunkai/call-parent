@@ -21,7 +21,7 @@ public class FileUtil {
             String s;
             //使用readLine方法，一次读一行
             while ((s = br.readLine()) != null) {
-                result.append(s);
+                result.append(s).append("\n");
             }
             br.close();
         } catch (Exception e) {
@@ -58,6 +58,33 @@ public class FileUtil {
             }
         }
         return result.toString();
+    }
+
+    public static String readPrefixLine(String fileName, String prefix, File file) {
+        BufferedReader br = null;
+        try {
+            //构造一个BufferedReader类来读取文件
+            br = new BufferedReader(new FileReader(file));
+            String s;
+            //使用readLine方法，一次读一行
+            while ((s = br.readLine()) != null) {
+                if (s.startsWith(prefix)) {
+                    return s.replace(prefix, "");
+                }
+            }
+            br.close();
+        } catch (Exception e) {
+            logger.error("读取" + fileName + "下的" + file.getName() + "文件失败", e);
+        } finally {
+            if (null != br) {
+                try {
+                    br.close();
+                } catch (Exception e) {
+                    logger.error("关闭" + fileName + "下的" + file.getName() + "文件流失败", e);
+                }
+            }
+        }
+        return "";
     }
 
     public static void main(String[] args) throws IOException {

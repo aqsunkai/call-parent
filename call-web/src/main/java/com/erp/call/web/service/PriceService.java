@@ -1,6 +1,10 @@
 package com.erp.call.web.service;
 
+import com.erp.call.web.util.FileUtil;
+import com.erp.call.web.util.HttpClientUtil;
+
 import java.io.File;
+import java.io.IOException;
 
 /**
  * @author sunkai
@@ -9,28 +13,50 @@ import java.io.File;
  */
 public class PriceService {
 
-    public static void main(String[] args) {
-        File file = new File("D:\\call\\images\\20210113_223418共下图52个地址");
+    public static void main(String[] args) throws IOException {
+        File file = new File("D:\\call\\images\\20210113_223418共下图52个地址\\32_2020 Leather Women Wallets Hasp Lady Moneybags Zipper Coin Purse Woman");
         File[] files = file.listFiles();
-        assert files != null;
         for (File productFile1 : files) {
-            File[] productFiles = productFile1.listFiles();
-            assert productFiles != null;
-            for (File productFile : productFiles) {
-                if ("属性图".equals(productFile.getName())) {
-                    File[] imageFiles = productFile.listFiles();
-                    if (null != imageFiles) {
-                        for (File imageFile : imageFiles) {
-                            String imageName = imageFile.getName();
-                            String imagePath = imageFile.getAbsolutePath();
-                            String newName = changeName(imageName, imagePath);
-                            File newFile = new File(imagePath.substring(0, imagePath.indexOf(imageName)) + newName);
-                            imageFile.renameTo(newFile);
-                        }
-                    }
+            if (productFile1.getName().endsWith(".url")) {
+                String url = FileUtil.readPrefixLine("aaa", "URL=", productFile1);
+                System.out.println(url);
+                String str = HttpClientUtil.getWithString(url, null);
+//                System.out.println(str);
+                if (str.contains("formatedActivityPrice")) {
+                    str = str.substring(str.indexOf("formatedActivityPrice\":\"US $") + 28);
+                    str = str.substring(0, str.indexOf("\","));
+                } else {
+                    str = str.substring(str.indexOf("formatedPrice\":\"US $") + 20);
+                    str = str.substring(0, str.indexOf("\","));
                 }
+                double price;
+                if (str.contains("-")) {
+                    price = Double.parseDouble(str.split("-")[1]);
+                } else {
+                    price = Double.parseDouble(str);
+                }
+                System.out.println(price);
             }
         }
+//        assert files != null;
+//        for (File productFile1 : files) {
+//            File[] productFiles = productFile1.listFiles();
+//            assert productFiles != null;
+//            for (File productFile : productFiles) {
+//                if ("属性图".equals(productFile.getName())) {
+//                    File[] imageFiles = productFile.listFiles();
+//                    if (null != imageFiles) {
+//                        for (File imageFile : imageFiles) {
+//                            String imageName = imageFile.getName();
+//                            String imagePath = imageFile.getAbsolutePath();
+//                            String newName = changeName(imageName, imagePath);
+//                            File newFile = new File(imagePath.substring(0, imagePath.indexOf(imageName)) + newName);
+//                            imageFile.renameTo(newFile);
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 
     private static String changeName(String fileName, String imagePath) {
