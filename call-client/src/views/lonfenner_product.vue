@@ -58,7 +58,7 @@
   :visible.sync="dialogVisible"
   :close-on-click-modal="false"
   :close-on-press-escape="false"
-  width="40%" center>
+  width="60%" center>
   <p v-if="running" style="color:#409EFF;text-align:center">正在创建</p>
   <p v-if="!running" style="color:#67C23A;text-align:center">创建完成</p>
   <p style="color:#909399;text-align:center">创建成功产品</p>

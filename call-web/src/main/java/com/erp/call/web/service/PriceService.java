@@ -3,6 +3,7 @@ package com.erp.call.web.service;
 import com.erp.call.web.dto.PriceReq;
 import com.erp.call.web.util.FileUtil;
 import com.erp.call.web.util.HttpClientUtil;
+import com.erp.call.web.util.NumberUtil;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -23,7 +24,7 @@ public class PriceService {
     private static final Logger logger = LoggerFactory.getLogger(PriceService.class);
 
     public Set<String> calculate(PriceReq priceReq) {
-        TreeMap<Integer, String> map = getPriceMap(priceReq.getCalPattern());
+        TreeMap<Double, String> map = getPriceMap(priceReq.getCalPattern());
         File file = new File(priceReq.getFilePath().trim());
         File[] files = file.listFiles();
         assert files != null;
@@ -95,35 +96,64 @@ public class PriceService {
         return errorFolder;
     }
 
-    private String calculatePrice(double price, TreeMap<Integer, String> map) {
+    private String calculatePrice(double price, TreeMap<Double, String> map) {
         String previous = "";
-        for (Map.Entry<Integer, String> entry : map.entrySet()) {
+        double previousKey = 0D;
+        for (Map.Entry<Double, String> entry : map.entrySet()) {
             if (price > entry.getKey()) {
-                return previous;
+                if (Math.abs(NumberUtil.formatDouble(previousKey - price)) > Math.abs(NumberUtil.formatDouble(price - entry.getKey()))) {
+                    return entry.getValue();
+                } else {
+                    return previous;
+                }
             }
+            previousKey = entry.getKey();
             previous = entry.getValue();
         }
         return previous;
     }
 
-    private TreeMap<Integer, String> getPriceMap(String calPattern) {
+    private TreeMap<Double, String> getPriceMap(String calPattern) {
         String[] patterns = calPattern.split("\n|\n|\t");
-        TreeMap<Integer, String> map = new TreeMap<>(Comparator.reverseOrder());
+        TreeMap<Double, String> map = new TreeMap<>(Comparator.reverseOrder());
+        double d1 = 0.001D;
         for (String pattern : patterns) {
             String[] priceStr = pattern.replace(" ", "").split(":");
             if (priceStr[0].startsWith(">")) {
                 throw new RuntimeException("不支持使用>号");
             } else if (priceStr[0].contains("-")) {
-                map.put(Integer.valueOf(priceStr[0].split("-")[1]), priceStr[1]);
+                map.put(Double.parseDouble(priceStr[0].split("-")[0]) + d1, priceStr[1]);
+                map.put(Double.parseDouble(priceStr[0].split("-")[1]) - d1, priceStr[1]);
             } else if (priceStr[0].startsWith("<=")) {
-                map.put(Integer.parseInt(priceStr[0].replace("<=", "")) + 1, priceStr[1]);
+                map.put(Double.parseDouble(priceStr[0].replace("<=", "")), priceStr[1]);
             } else if (priceStr[0].startsWith("<")) {
-                map.put(Integer.parseInt(priceStr[0].replace("<", "")), priceStr[1]);
+                map.put(Double.parseDouble(priceStr[0].replace("<", "")) - d1, priceStr[1]);
             } else {
-                map.put(Integer.valueOf(priceStr[0]), priceStr[1]);
+                map.put(Double.valueOf(priceStr[0]), priceStr[1]);
             }
         }
         return map;
     }
 
+//    public static void main(String[] args) {
+//        String ca = "<4:14.97\n" + //3.999以下
+//                "        4-5:15.97\n" + //4.001-4.999
+//                "        6-7:16.97\n" +
+//                "        8:17.97\n" +
+//                "        9:18.97\n" +
+//                "        10:19.97\n" +
+//                "        11:20.97\n" +
+//                "        12:21.97\n" +
+//                "        13:22.97\n" +
+//                "        14:23.97\n" +
+//                "        15:24.97\n" +
+//                "        16:25.97\n" +
+//                "        17:26.97\n" +
+//                "        18:27.97\n" +
+//                "        19:28.97\n" +
+//                "        20:29.97";
+//        TreeMap<Double, String> treeMap = getPriceMap(ca);
+//        System.out.println(treeMap);
+//        System.out.println(calculatePrice(3.9999D, treeMap));
+//    }
 }
