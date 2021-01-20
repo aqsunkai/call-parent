@@ -1,11 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e5a3e179-ae63-4343-828b-9a02060be9bb" name="Default Changelist" comment="产品价格计算">
-      <change afterPath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/util/NumberUtil.java" afterDir="false" />
+    <list default="true" id="e5a3e179-ae63-4343-828b-9a02060be9bb" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/js/2.892860cbc0778b7bebe1.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/js/2.892860cbc0778b7bebe1.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/js/3.bf36e4c3332a87a7d800.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/js/3.bf36e4c3332a87a7d800.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/js/app.bdccd065097cc9fda64d.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/js/app.bdccd065097cc9fda64d.js.map" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/js/manifest.642a2d2c9be3e039c0c8.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/js/manifest.642a2d2c9be3e039c0c8.js.map" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-client/src/views/lonfenner_product.vue" beforeDir="false" afterPath="$PROJECT_DIR$/call-client/src/views/lonfenner_product.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/service/PriceService.java" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/java/com/erp/call/web/service/PriceService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/css/app.79c5114cd9162373dda7712dfc19850b.css" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/css/app.79c5114cd9162373dda7712dfc19850b.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/js/0.e23bf593bef37490c9e3.js" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/js/0.e23bf593bef37490c9e3.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/js/1.2b71f24573069d2afc7a.js" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/js/1.2b71f24573069d2afc7a.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/js/2.07d527382d67d4173c64.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/js/2.07d527382d67d4173c64.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/js/3.b7a5a4fff3dd114a7c45.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/js/3.b7a5a4fff3dd114a7c45.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/js/app.328e6aff10bb3fac64e6.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/js/app.328e6aff10bb3fac64e6.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/js/manifest.7feef57f3fa588332f68.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/js/manifest.7feef57f3fa588332f68.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/call-web/src/main/resources/static/js/vendor.d7dd87ada45b9bb01d04.js" beforeDir="false" afterPath="$PROJECT_DIR$/call-web/src/main/resources/static/js/vendor.d7dd87ada45b9bb01d04.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -280,7 +298,7 @@
       <workItem from="1610974819482" duration="697000" />
       <workItem from="1611045397198" duration="11909000" />
       <workItem from="1611058949445" duration="265000" />
-      <workItem from="1611119464081" duration="4372000" />
+      <workItem from="1611119464081" duration="5096000" />
     </task>
     <task id="LOCAL-00001" summary="提交">
       <created>1588763245473</created>
@@ -478,7 +496,14 @@
       <option name="project" value="LOCAL" />
       <updated>1611050963328</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="产品价格计算">
+      <created>1611124852081</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1611124852081</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -526,10 +551,10 @@
     </state>
     <state x="761" y="-1008" width="582" height="588" key="#xdebugger.evaluate/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1611124604660" />
     <state x="507" y="47" width="521" height="587" key="#xdebugger.evaluate/0.0.1280.680@0.0.1280.680" timestamp="1610854834521" />
-    <state x="518" y="-966" key="CommitChangelistDialog2" timestamp="1611124777407">
+    <state x="518" y="-966" key="CommitChangelistDialog2" timestamp="1611124851622">
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
-    <state x="518" y="-966" key="CommitChangelistDialog2/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1611124777407" />
+    <state x="518" y="-966" key="CommitChangelistDialog2/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1611124851622" />
     <state x="345" y="0" key="CommitChangelistDialog2/0.0.1280.680/0.-1080.1920.1040@0.0.1280.680" timestamp="1610975370079" />
     <state x="345" y="0" key="CommitChangelistDialog2/0.0.1280.680@0.0.1280.680" timestamp="1610855318635" />
     <state width="897" height="466" key="DebuggerActiveHint" timestamp="1611057040805">
@@ -538,10 +563,10 @@
     <state width="897" height="466" key="DebuggerActiveHint/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1611057040805" />
     <state width="470" height="305" key="DebuggerActiveHint/0.0.1280.680/0.-1080.1920.1040@0.0.1280.680" timestamp="1611045692294" />
     <state width="470" height="305" key="DebuggerActiveHint/0.0.1280.680@0.0.1280.680" timestamp="1610854825102" />
-    <state x="363" y="-1002" key="DiffContextDialog" timestamp="1611050948586">
+    <state x="363" y="-1002" key="DiffContextDialog" timestamp="1611124847676">
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
-    <state x="363" y="-1002" key="DiffContextDialog/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1611050948586" />
+    <state x="363" y="-1002" key="DiffContextDialog/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1611124847676" />
     <state x="242" y="51" key="DiffContextDialog/0.0.1280.680/0.-1080.1920.1040@0.0.1280.680" timestamp="1610975178851" />
     <state x="242" y="51" key="DiffContextDialog/0.0.1280.680@0.0.1280.680" timestamp="1610855296646" />
     <state width="1879" height="178" key="GridCell.Tab.0.bottom" timestamp="1611124727236">
@@ -621,10 +646,10 @@
     </state>
     <state width="747" height="698" key="SwitcherDM/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1611124805386" />
     <state width="498" height="456" key="SwitcherDM/0.0.1280.680@0.0.1280.680" timestamp="1604823036232" />
-    <state x="552" y="-826" key="Vcs.Push.Dialog.v2" timestamp="1611059226644">
+    <state x="552" y="-826" key="Vcs.Push.Dialog.v2" timestamp="1611124853595">
       <screen x="0" y="-1080" width="1920" height="1040" />
     </state>
-    <state x="552" y="-826" key="Vcs.Push.Dialog.v2/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1611059226644" />
+    <state x="552" y="-826" key="Vcs.Push.Dialog.v2/0.0.1280.680/0.-1080.1920.1040@0.-1080.1920.1040" timestamp="1611124853595" />
     <state x="368" y="149" key="Vcs.Push.Dialog.v2/0.0.1280.680/0.-1080.1920.1040@0.0.1280.680" timestamp="1610975372147" />
     <state x="368" y="149" key="Vcs.Push.Dialog.v2/0.0.1280.680@0.0.1280.680" timestamp="1610855325805" />
     <state x="485" y="286" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1610975436861">
