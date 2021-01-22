@@ -9,5 +9,9 @@ public class PriceReq {
 
     private String property;
 
+    private Integer valueType;
+
+    private Integer intervalType;
+
     private String calPattern;
 }

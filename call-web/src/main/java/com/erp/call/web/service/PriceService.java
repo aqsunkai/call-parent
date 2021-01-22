@@ -50,16 +50,29 @@ public class PriceService {
                             logger.error("文件夹：" + folder.getName() + "查询价格失败");
                             break;
                         }
-                        if (str.contains("formatedActivityPrice")) {
-                            str = str.substring(str.indexOf("formatedActivityPrice\":\"US $") + 28);
-                            str = str.substring(0, str.indexOf("\","));
+                        if (priceReq.getValueType() == 0) {
+                            // 优先使用促销价格
+                            if (str.contains("formatedActivityPrice")) {
+                                str = str.substring(str.indexOf("formatedActivityPrice\":\"US $") + 28);
+                            } else {
+                                str = str.substring(str.indexOf("formatedPrice\":\"US $") + 20);
+                            }
                         } else {
+                            // 强制使用完整价格
                             str = str.substring(str.indexOf("formatedPrice\":\"US $") + 20);
-                            str = str.substring(0, str.indexOf("\","));
                         }
+                        str = str.substring(0, str.indexOf("\","));
                         double price;
                         if (str.contains("-")) {
-                            price = Double.parseDouble(str.split("-")[1]);
+                            if (priceReq.getIntervalType() == 0) {
+                                // 取最小值
+                                price = Double.parseDouble(str.split("-")[0]);
+                            } else if (priceReq.getIntervalType() == 2) {
+                                // 取最大值
+                                price = Double.parseDouble(str.split("-")[1]);
+                            } else {
+                                price = NumberUtil.formatDoubleScale2((Double.parseDouble(str.split("-")[0]) + Double.parseDouble(str.split("-")[1])) / 2);
+                            }
                         } else {
                             price = Double.parseDouble(str);
                         }
@@ -101,7 +114,7 @@ public class PriceService {
         double previousKey = 0D;
         for (Map.Entry<Double, String> entry : map.entrySet()) {
             if (price > entry.getKey()) {
-                if (Math.abs(NumberUtil.formatDouble(previousKey - price)) > Math.abs(NumberUtil.formatDouble(price - entry.getKey()))) {
+                if (Math.abs(NumberUtil.formatDoubleScale3(previousKey - price)) > Math.abs(NumberUtil.formatDoubleScale3(price - entry.getKey()))) {
                     return entry.getValue();
                 } else {
                     return previous;

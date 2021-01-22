@@ -7,7 +7,20 @@
   <el-form-item label="图片文件夹名称" prop="property">
     <el-input v-model="ruleForm.property" :placeholder="propertyTxt" ></el-input>
   </el-form-item>
-  <el-form-item label="价格修改方式" prop="calPattern">
+  <el-form-item label="价格取值方式" prop="valueType">
+    <el-radio-group v-model="ruleForm.valueType">
+      <el-radio :label="0">优先使用促销价格</el-radio>
+      <el-radio :label="1">强制使用完整价格</el-radio>
+    </el-radio-group>
+  </el-form-item>
+  <el-form-item label="区间价格取值" prop="intervalType">
+    <el-radio-group v-model="ruleForm.intervalType">
+      <el-radio :label="0">最小值</el-radio>
+      <el-radio :label="1">中间值</el-radio>
+      <el-radio :label="2">最大值</el-radio>
+    </el-radio-group>
+  </el-form-item>
+  <el-form-item label="价格转换" prop="calPattern">
     <el-input type="textarea" rows="12" :placeholder="priceTxt" v-model="ruleForm.calPattern"></el-input>
   </el-form-item>
   <el-form-item class="content_button">
@@ -50,6 +63,8 @@ export default {
       ruleForm: {
         filePath: '',
         property: '属性图',
+        valueType: 0,
+        intervalType: 2,
         calPattern: '<4:14.97\n' +
         '4-5:15.97\n' +
         '6-7:16.97\n' +

@@ -9,9 +9,14 @@ import java.math.BigDecimal;
  */
 public class NumberUtil {
 
-    public static double formatDouble(double d) {
+    public static double formatDoubleScale3(double d) {
         BigDecimal b = new BigDecimal(d);
         return b.setScale(3, BigDecimal.ROUND_HALF_UP).doubleValue();
+    }
+
+    public static double formatDoubleScale2(double d) {
+        BigDecimal b = new BigDecimal(d);
+        return b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
 }
