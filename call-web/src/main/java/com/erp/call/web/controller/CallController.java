@@ -40,27 +40,27 @@ public class CallController {
         return Result.success(null);
     }
 
-    @PostMapping(value = "/erpProduct/send")
-    public Result<String> sendErpProduct(@RequestBody PageReq pageReq) {
-        if (StringUtils.isEmpty(pageReq.getCookie())) {
-            return Result.error("填写cookie");
-        }
-        if (StringUtils.isEmpty(pageReq.getFilePath())) {
-            return Result.error("填写filePath");
-        }
-        if (StringUtils.isEmpty(pageReq.getProperty())) {
-            return Result.error("填写列表文件夹名称");
-        }
-        if (StringUtils.isEmpty(pageReq.getAttachProperty())) {
-            return Result.error("填写详情文件夹名称");
-        }
-        if (pageReq.getType() == 1 && StringUtils.isEmpty(pageReq.getProductNameFile())) {
-            return Result.error("填写txt文件名");
-        }
-        pageReq.setCookie(pageReq.getCookie().trim());
-        callService.sendErpProduct(pageReq);
-        return Result.success(null);
-    }
+//    @PostMapping(value = "/erpProduct/send")
+//    public Result<String> sendErpProduct(@RequestBody PageReq pageReq) {
+//        if (StringUtils.isEmpty(pageReq.getCookie())) {
+//            return Result.error("填写cookie");
+//        }
+//        if (StringUtils.isEmpty(pageReq.getFilePath())) {
+//            return Result.error("填写filePath");
+//        }
+//        if (StringUtils.isEmpty(pageReq.getProperty())) {
+//            return Result.error("填写列表文件夹名称");
+//        }
+//        if (StringUtils.isEmpty(pageReq.getAttachProperty())) {
+//            return Result.error("填写详情文件夹名称");
+//        }
+//        if (pageReq.getType() == 1 && StringUtils.isEmpty(pageReq.getProductNameFile())) {
+//            return Result.error("填写txt文件名");
+//        }
+//        pageReq.setCookie(pageReq.getCookie().trim());
+//        callService.sendErpProduct(pageReq);
+//        return Result.success(null);
+//    }
 
     @PostMapping(value = "/product/result")
     public Result<PageRes> getProductResult(@RequestBody PageReq pageReq) {

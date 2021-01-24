@@ -35,3 +35,10 @@ export function priceCalculate (data) {
     data: data
   })
 }
+export function calculateResult (params) {
+  return Axios({
+    url: `/api/price/calculate/result`,
+    method: 'get',
+    params: params
+  })
+}

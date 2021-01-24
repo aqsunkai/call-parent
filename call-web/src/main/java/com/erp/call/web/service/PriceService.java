@@ -1,9 +1,11 @@
 package com.erp.call.web.service;
 
+import com.erp.call.web.dto.PageRes;
 import com.erp.call.web.dto.PriceReq;
 import com.erp.call.web.util.FileUtil;
 import com.erp.call.web.util.HttpClientUtil;
 import com.erp.call.web.util.NumberUtil;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -12,6 +14,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author sunkai
@@ -23,90 +28,118 @@ public class PriceService {
 
     private static final Logger logger = LoggerFactory.getLogger(PriceService.class);
 
-    public Set<String> calculate(PriceReq priceReq) {
-        TreeMap<Double, String> map = getPriceMap(priceReq.getCalPattern());
+    private ExecutorService executors = Executors.newCachedThreadPool();
+
+    private volatile Map<String, Boolean> runningMap = new ConcurrentHashMap<>();
+    private Map<String, List<String>> FAIL_NAME = new ConcurrentHashMap<>();
+
+    public void calculatePrice(PriceReq priceReq) {
+        File file = checkFilePath(priceReq);
+        executors.execute(() -> calculate(priceReq, file));
+    }
+
+    private File checkFilePath(PriceReq priceReq) {
+        if (Boolean.TRUE.equals(runningMap.get(priceReq.getFilePath().trim()))) {
+            throw new RuntimeException("该文件夹正在修改价格，请耐心等待！");
+        }
         File file = new File(priceReq.getFilePath().trim());
-        File[] files = file.listFiles();
-        assert files != null;
-        List<String> calPriceFolder = Arrays.asList(priceReq.getProperty().replace(" ", "").replace("，", ",").split(","));
+        if (!file.exists()) {
+            throw new RuntimeException("文件夹地址不正确！");
+        }
+        runningMap.put(priceReq.getFilePath().trim(), true);
+        FAIL_NAME.remove(priceReq.getFilePath().trim());
+        return file;
+    }
+
+    public void calculate(PriceReq priceReq, File file) {
         Set<String> errorFolder = Sets.newHashSet();
-        for (File folder : files) {
-            // 循环产品文件夹
-            File[] productFiles = folder.listFiles();
-            assert productFiles != null;
-            String priceStr = "";
-            // 查询价格
-            try {
-                for (File productFile : productFiles) {
-                    if (productFile.getName().endsWith(".url")) {
-                        String url = FileUtil.readPrefixLine(folder.getName(), "URL=", productFile);
-                        if (StringUtils.isEmpty(url)) {
-                            break;
-                        }
-                        String str;
-                        try {
-                            str = HttpClientUtil.getWithString(url, null);
-                        } catch (Exception e) {
-                            logger.error("文件夹：" + folder.getName() + "查询价格失败");
-                            break;
-                        }
-                        if (priceReq.getValueType() == 0) {
-                            // 优先使用促销价格
-                            if (str.contains("formatedActivityPrice")) {
-                                str = str.substring(str.indexOf("formatedActivityPrice\":\"US $") + 28);
+        try {
+            TreeMap<Double, String> map = getPriceMap(priceReq.getCalPattern());
+            File[] files = file.listFiles();
+            assert files != null;
+            List<String> calPriceFolder = Arrays.asList(priceReq.getProperty().replace(" ", "").replace("，", ",").split(","));
+            for (File folder : files) {
+                // 循环产品文件夹
+                File[] productFiles = folder.listFiles();
+                assert productFiles != null;
+                String priceStr = "";
+                // 查询价格
+                try {
+                    for (File productFile : productFiles) {
+                        if (productFile.getName().endsWith(".url")) {
+                            String url = FileUtil.readPrefixLine(folder.getName(), "URL=", productFile);
+                            if (StringUtils.isEmpty(url)) {
+                                break;
+                            }
+                            String str;
+                            try {
+                                str = HttpClientUtil.getWithString(url, null);
+                            } catch (Exception e) {
+                                logger.error("文件夹：" + folder.getName() + "查询价格失败");
+                                break;
+                            }
+                            if (priceReq.getValueType() == 0) {
+                                // 优先使用促销价格
+                                if (str.contains("formatedActivityPrice")) {
+                                    str = str.substring(str.indexOf("formatedActivityPrice\":\"US $") + 28);
+                                } else {
+                                    str = str.substring(str.indexOf("formatedPrice\":\"US $") + 20);
+                                }
                             } else {
+                                // 强制使用完整价格
                                 str = str.substring(str.indexOf("formatedPrice\":\"US $") + 20);
                             }
-                        } else {
-                            // 强制使用完整价格
-                            str = str.substring(str.indexOf("formatedPrice\":\"US $") + 20);
-                        }
-                        str = str.substring(0, str.indexOf("\","));
-                        double price;
-                        if (str.contains("-")) {
-                            if (priceReq.getIntervalType() == 0) {
-                                // 取最小值
-                                price = Double.parseDouble(str.split("-")[0]);
-                            } else if (priceReq.getIntervalType() == 2) {
-                                // 取最大值
-                                price = Double.parseDouble(str.split("-")[1]);
+                            str = str.substring(0, str.indexOf("\","));
+                            double price;
+                            if (str.contains("-")) {
+                                if (priceReq.getIntervalType() == 0) {
+                                    // 取最小值
+                                    price = Double.parseDouble(str.split("-")[0]);
+                                } else if (priceReq.getIntervalType() == 2) {
+                                    // 取最大值
+                                    price = Double.parseDouble(str.split("-")[1]);
+                                } else {
+                                    price = NumberUtil.formatDoubleScale2((Double.parseDouble(str.split("-")[0]) + Double.parseDouble(str.split("-")[1])) / 2);
+                                }
                             } else {
-                                price = NumberUtil.formatDoubleScale2((Double.parseDouble(str.split("-")[0]) + Double.parseDouble(str.split("-")[1])) / 2);
+                                price = Double.parseDouble(str);
                             }
-                        } else {
-                            price = Double.parseDouble(str);
+                            // 查询自己卖的价格
+                            priceStr = calculatePrice(price, map);
                         }
-                        // 查询自己卖的价格
-                        priceStr = calculatePrice(price, map);
                     }
-                }
-                if (StringUtils.isEmpty(priceStr)) {
+                    if (StringUtils.isEmpty(priceStr)) {
+                        logger.info("文件夹：" + folder.getName() + "修改价格失败：未获取到价格");
+                        errorFolder.add(folder.getName());
+                        continue;
+                    }
+                    // 设置价格
+                    for (File productFile : productFiles) {
+                        if (calPriceFolder.contains(productFile.getName()) && productFile.isDirectory()) {
+                            File[] imageFiles = productFile.listFiles();
+                            if (null != imageFiles) {
+                                int i = 1;
+                                for (File imageFile : imageFiles) {
+                                    String imageName = imageFile.getName();
+                                    String imagePath = imageFile.getAbsolutePath();
+                                    String newName = priceStr + " (" + i + ")" + imageName.substring(imageName.lastIndexOf("."));
+                                    File newFile = new File(imagePath.substring(0, imagePath.indexOf(imageName)) + newName);
+                                    imageFile.renameTo(newFile);
+                                    i++;
+                                }
+                            }
+                        }
+                    }
+                    logger.info("文件夹：" + folder.getName() + "修改价格成功");
+                } catch (Exception e) {
+                    logger.info("文件夹：" + folder.getName() + "修改价格异常");
                     errorFolder.add(folder.getName());
-                    continue;
                 }
-                // 设置价格
-                for (File productFile : productFiles) {
-                    if (calPriceFolder.contains(productFile.getName()) && productFile.isDirectory()) {
-                        File[] imageFiles = productFile.listFiles();
-                        if (null != imageFiles) {
-                            int i = 1;
-                            for (File imageFile : imageFiles) {
-                                String imageName = imageFile.getName();
-                                String imagePath = imageFile.getAbsolutePath();
-                                String newName = priceStr + " (" + i + ")" + imageName.substring(imageName.lastIndexOf("."));
-                                File newFile = new File(imagePath.substring(0, imagePath.indexOf(imageName)) + newName);
-                                imageFile.renameTo(newFile);
-                                i++;
-                            }
-                        }
-                    }
-                }
-                logger.info("文件夹：" + folder.getName() + "修改价格成功");
-            } catch (Exception e) {
-                errorFolder.add(folder.getName());
             }
+        } finally {
+            FAIL_NAME.put(priceReq.getFilePath().trim(), Lists.newArrayList(errorFolder));
+            runningMap.put(priceReq.getFilePath().trim(), false);
         }
-        return errorFolder;
     }
 
     private String calculatePrice(double price, TreeMap<Double, String> map) {
@@ -146,6 +179,13 @@ public class PriceService {
             }
         }
         return map;
+    }
+
+    public PageRes getCalculateResult(String filePath) {
+        PageRes res = new PageRes();
+        res.setRunning(runningMap.get(filePath));
+        res.setFailName(FAIL_NAME.get(filePath));
+        return res;
     }
 
 //    public static void main(String[] args) {

@@ -1,6 +1,6 @@
 <template>
 <div>
-<el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="150px" class="price-ruleForm" size="small" v-loading="loading" element-loading-text="正在拼命修改价格">
+<el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="150px" class="price-ruleForm" size="small">
   <el-form-item label="文件根路径" prop="filePath">
     <el-input v-model="ruleForm.filePath"></el-input>
   </el-form-item>
@@ -21,23 +21,24 @@
     </el-radio-group>
   </el-form-item>
   <el-form-item label="价格转换" prop="calPattern">
-    <el-input type="textarea" rows="12" :placeholder="priceTxt" v-model="ruleForm.calPattern"></el-input>
+    <el-input type="textarea" rows="10" :placeholder="priceTxt" v-model="ruleForm.calPattern"></el-input>
   </el-form-item>
   <el-form-item class="content_button">
     <el-button type="primary" @click="submitForm('ruleForm')">修改价格</el-button>
   </el-form-item>
+    <el-alert type = 'warning' center show-icon effect="dark" v-show="showRes == 1" title="正在拼命修改价格，请耐心等待"></el-alert>
+    <el-alert type = 'success' center show-icon effect="dark" v-show="showRes == 2" title="价格全部修改成功"></el-alert>
+    <el-alert type = 'error' center show-icon effect="dark" v-show="showRes == 3" title="价格部分修改失败，失败的文件夹如下"></el-alert>
+    <div v-if="errorFolder.length > 0">
+       <div v-for="(item,index) in errorFolder" :key="index">
+        <span>{{item}}</span>
+       </div>
+    </div>
 </el-form>
-<div v-if="errorFolder.length>0">
- <p style="color:#F56C6C;text-align:center">修改失败的文件夹</p>
- <div v-for="(item,index) in errorFolder" :key="index">
-    <span co>{{item}}</span>
-  </div>
-</div>
 </div>
 </template>
 <script>
-import { Message } from 'element-ui'
-import { priceCalculate } from '@/api'
+import { priceCalculate, calculateResult } from '@/api'
 export default {
   data () {
     return {
@@ -59,7 +60,9 @@ export default {
         '20:29.97',
       propertyTxt: '多个文件夹以逗号,分隔',
       errorFolder: [],
-      loading: false,
+      result: '',
+      showRes: 0,
+      calculateTimer: '',
       ruleForm: {
         filePath: '',
         property: '属性图',
@@ -95,35 +98,42 @@ export default {
       }
     }
   },
+  // 销毁定时器
+  beforeDestroy () {
+    if (this.calculateTimer) {
+      clearInterval(this.calculateTimer)
+    }
+  },
   methods: {
     submitForm (formName) {
+      this.errorFolder = []
       this.$refs[formName].validate(async (valid) => {
         if (valid) {
-          this.loading = true
           const res = await priceCalculate(this.ruleForm)
-          this.loading = false
           if (res.status) {
-            Message({
-              message: '修改价格成功',
-              type: 'success',
-              duration: 3 * 1000,
-              showClose: true
-            })
-            if (res.result) {
-              this.errorFolder = res.result
-            }
-          } else {
-            Message({
-              message: this.result,
-              type: 'error',
-              duration: 3 * 1000,
-              showClose: true
-            })
+            this.showRes = 1
+            this.calculateTimer = setInterval(() => {
+              this.getCalculateResult()
+            }, 2000)
           }
         } else {
           return false
         }
       })
+    },
+    async getCalculateResult () {
+      const res = await calculateResult({'filePath': this.ruleForm.filePath})
+      if (res.result) {
+        if (!res.result.running) {
+          if (!res.result.failName || res.result.failName.length === 0) {
+            this.showRes = 2
+          } else {
+            this.errorFolder = res.result.failName
+            this.showRes = 3
+          }
+          clearInterval(this.calculateTimer)
+        }
+      }
     }
   }
 }
