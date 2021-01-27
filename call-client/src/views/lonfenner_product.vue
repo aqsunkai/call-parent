@@ -46,6 +46,12 @@
       <el-input v-model="ruleForm.customDefs.valueOptions" style="width: 286px"></el-input>
     </div>
   </el-form-item>
+  <el-form-item label="上传完成播放音乐" prop="playMusic">
+    <el-radio-group v-model="ruleForm.playMusic">
+      <el-radio :label="0">否</el-radio>
+      <el-radio :label="1">是</el-radio>
+    </el-radio-group>
+  </el-form-item>
   <el-form-item label="Authorization" prop="cookie">
     <el-input type="textarea" rows="12" v-model="ruleForm.cookie"></el-input>
   </el-form-item>
@@ -90,6 +96,7 @@ export default {
       ruleForm: {
         type: 1,
         priceType: 2,
+        playMusic: 1,
         attachType: '',
         filePath: '',
         property: '属性图',

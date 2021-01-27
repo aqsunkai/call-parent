@@ -25,4 +25,6 @@ public class PageReq {
 
     private CustomDef customDefs;
 
+    private Integer playMusic;
+
 }

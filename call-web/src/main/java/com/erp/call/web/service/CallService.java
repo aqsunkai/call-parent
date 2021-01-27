@@ -237,7 +237,9 @@ public class CallService {
             logger.error("异步创建产品失败", e);
         } finally {
             runningMap.put(pageReq.getFilePath(), false);
-            playerUtil.play();
+            if (pageReq.getPlayMusic() == 1) {
+                playerUtil.play();
+            }
         }
     }
 
