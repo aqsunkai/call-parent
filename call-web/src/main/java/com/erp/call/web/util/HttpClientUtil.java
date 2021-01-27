@@ -75,6 +75,10 @@ public class HttpClientUtil {
 			response = httpClient.execute(httpPost);
 			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				return EntityUtils.toString(response.getEntity(), CHAR_SET);
+			} else {
+				logger.warn("request is failure,url:{},statusCode:{},errorMsg:{}", url,
+						response.getStatusLine().getStatusCode(), EntityUtils.toString(response.getEntity(), CHAR_SET));
+				throw new RuntimeException("request is failure,code:" + response.getStatusLine().getStatusCode());
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage());
@@ -83,8 +87,6 @@ public class HttpClientUtil {
 				IOUtils.close(response.getEntity().getContent());
 			}
 		}
-		logger.warn("request is failure,url:{},statusCode:{},errorMsg:{}", url, response.getStatusLine().getStatusCode(), JSON.toJSONString(response.getEntity()));
-		throw new RuntimeException("request is failure,code:" + response.getStatusLine().getStatusCode());
 	}
 
 	public static <T> T post(String url, Object dto, Class<T> clazz) throws IOException {
@@ -147,7 +149,7 @@ public class HttpClientUtil {
 		httpGet.setConfig(config);
 		HttpResponse response = httpClient.execute(httpGet);
 		if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-			logger.error("request is failure,url:{},statusCode:{}", url, response.getStatusLine().getStatusCode());
+			logger.error("request is failure,url:{},statusCode:{},errorMsg:{}", url, response.getStatusLine().getStatusCode(), EntityUtils.toString(response.getEntity(), CHAR_SET));
 			throw new RuntimeException("request is failure,code:" + response.getStatusLine().getStatusCode());
 		}
 		return response;
@@ -160,4 +162,8 @@ public class HttpClientUtil {
 			logger.error("httpClient destroy error ", e);
 		}
 	}
+
+//	public static void main(String[] args) throws IOException {
+//		System.out.println(HttpClientUtil.getWithString("http://localhost:8080/api/ss", null));
+//	}
 }

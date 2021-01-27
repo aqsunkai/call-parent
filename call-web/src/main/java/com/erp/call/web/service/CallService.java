@@ -227,7 +227,7 @@ public class CallService {
                     uploadFail(pageReq, fileName);
                 }
                 if (count < length) {
-                    sleepMomentFail();
+                    sleepMoment();
                 }
             }
         } catch (Exception e) {

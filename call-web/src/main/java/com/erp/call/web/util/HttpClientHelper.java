@@ -114,14 +114,16 @@ public class HttpClientHelper {
             response = httpClient.execute(httpRequest);
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
                 return EntityUtils.toString(response.getEntity(), CHAR_SET);
+            } else {
+                logger.warn("request is failure,url:{},statusCode:{},errorMsg:{}", url, response.getStatusLine().getStatusCode(),
+                        EntityUtils.toString(response.getEntity(), CHAR_SET));
+                return null;
             }
         } finally {
             if (null != response) {
                 IOUtils.close(response.getEntity().getContent());
             }
         }
-        logger.warn("request is failure,url:{},statusCode:{}", url, response.getStatusLine().getStatusCode());
-        return null;
     }
 
     /**
@@ -156,14 +158,16 @@ public class HttpClientHelper {
             response = httpClient.execute(httpost);
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 return EntityUtils.toString(response.getEntity(), CHAR_SET);
+            } else {
+                logger.warn("executeFile is failure,url:{},statusCode:{},errorMsg:{}", url,
+                        response.getStatusLine().getStatusCode(), EntityUtils.toString(response.getEntity(), CHAR_SET));
+                return null;
             }
         } finally {
             if (null != response) {
                 IOUtils.close(response.getEntity().getContent());
             }
         }
-        logger.warn("executeFile is failure,url:{},statusCode:{}", url, response.getStatusLine().getStatusCode());
-        return null;
     }
 
     public <T> T postFormData(String url, Object dto, Map<String, String> headers, Class<T> clazz) {
@@ -203,14 +207,16 @@ public class HttpClientHelper {
             response = httpClient.execute(httpost);
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 return EntityUtils.toString(response.getEntity(), CHAR_SET);
+            } else {
+                logger.warn("postFormData is failure,url:{},statusCode:{},errorMsg:{}", url,
+                        response.getStatusLine().getStatusCode(), EntityUtils.toString(response.getEntity(), CHAR_SET));
+                return null;
             }
         } finally {
             if (null != response) {
                 IOUtils.close(response.getEntity().getContent());
             }
         }
-        logger.warn("postFormData is failure,url:{},statusCode:{}", url, response.getStatusLine().getStatusCode());
-        return null;
     }
 
     @PreDestroy

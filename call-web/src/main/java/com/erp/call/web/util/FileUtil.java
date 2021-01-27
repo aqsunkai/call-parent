@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.io.IOException;
 
 public class FileUtil {
 
@@ -87,9 +86,9 @@ public class FileUtil {
         return "";
     }
 
-    public static void main(String[] args) throws IOException {
-        File file = new File("D:\\call\\aaaaaaaaaa\\1 (114)\\下图记录.txt");
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        System.out.println(br.readLine());
-    }
+//    public static void main(String[] args) throws IOException {
+//        File file = new File("D:\\call\\aaaaaaaaaa\\1 (114)\\下图记录.txt");
+//        BufferedReader br = new BufferedReader(new FileReader(file));
+//        System.out.println(br.readLine());
+//    }
 }

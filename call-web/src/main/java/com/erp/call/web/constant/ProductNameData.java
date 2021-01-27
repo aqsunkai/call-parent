@@ -58,7 +58,7 @@ public class ProductNameData {
         for (String word : forbiddenWords) {
             newName = newName.replace(word, "");
         }
-        newName = newName.trim().replace(" {2,}", " ");
+        newName = newName.trim().replaceAll(" {2,}", " ");
         if (StringUtils.isBlank(newName)) {
             return "";
         }
@@ -74,7 +74,7 @@ public class ProductNameData {
     }
 
 //    public static void main(String[] args) {
-//        String name = "Fashion Luxury Women’s Cow Leather Phone Wallet Retro Sunflower Hollo";
+//        String name = "v  f  dsa  f";
 //        System.out.println(changeProductName(name));
 //    }
 
