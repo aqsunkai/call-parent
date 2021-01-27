@@ -9,6 +9,7 @@ import com.erp.call.web.dto.UploadRes;
 import com.erp.call.web.util.FileUtil;
 import com.erp.call.web.util.HttpClientHelper;
 import com.erp.call.web.util.IDGeneratorUtil;
+import com.erp.call.web.util.PlayerUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
@@ -44,6 +45,8 @@ public class CallService {
 
     @Autowired
     private HttpClientHelper httpClientHelper;
+    @Autowired
+    private PlayerUtil playerUtil;
 
     @Autowired
     private IDGeneratorUtil idGeneratorUtil;
@@ -234,6 +237,7 @@ public class CallService {
             logger.error("异步创建产品失败", e);
         } finally {
             runningMap.put(pageReq.getFilePath(), false);
+            playerUtil.play();
         }
     }
 
