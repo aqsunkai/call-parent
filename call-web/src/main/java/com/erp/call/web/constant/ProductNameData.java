@@ -20,13 +20,17 @@ public class ProductNameData {
         forbiddenWords.add("2020");
         forbiddenWords.add("2021");
         forbiddenWords.add("new fashion");
+        forbiddenWords.add("new style");
         forbiddenWords.add("new designer");
         forbiddenWords.add("new arrival");
+        forbiddenWords.add("new arrive");
         forbiddenWords.add("new original");
+        forbiddenWords.add("high-quality");
         forbiddenWords.add("high quality");
         forbiddenWords.add("top quality");
         forbiddenWords.add("top rated");
         forbiddenWords.add("brand designer");
+        forbiddenWords.add("famous designer");
         forbiddenWords.add("brand new");
         forbiddenWords.add("free gift");
         forbiddenWords.add("free shipping");
@@ -34,6 +38,7 @@ public class ProductNameData {
         forbiddenWords.add("free ship");
         forbiddenWords.add("hot sales");
         forbiddenWords.add("hot sale");
+        forbiddenWords.add("hot selling");
         forbiddenWords.add("clearance sales");
         forbiddenWords.add("sale");
         forbiddenWords.add("hot item");
