@@ -67,6 +67,7 @@
   width="50%" center>
   <p v-if="running" style="color:#409EFF;text-align:center">正在创建</p>
   <p v-if="!running" style="color:#67C23A;text-align:center">创建完成</p>
+  <el-link type="info" disabled>开始时间：{{createTime}}，共{{totalFiles}}个文件夹，成功{{successFiles}}个文件夹，失败{{failFiles}}个文件夹，完成时间：{{endTime}}</el-link>
   <p style="color:#909399;text-align:center">创建成功产品</p>
   <div v-for="(item,index) in uploadName" :key="1000+index">
     <span>{{item}}</span>
@@ -85,6 +86,7 @@
 <script>
 import { Message } from 'element-ui'
 import { productSend, productResult } from '@/api'
+import { util } from '@/utils/util'
 export default {
   data () {
     return {
@@ -93,6 +95,11 @@ export default {
       running: true,
       failName: [],
       uploadName: [],
+      createTime: '-',
+      successFiles: 0,
+      failFiles: 0,
+      endTime: '-',
+      totalFiles: 0,
       ruleForm: {
         type: 1,
         priceType: 2,
@@ -177,10 +184,15 @@ export default {
     async sendProduct () {
       const res = await productSend(this.ruleForm)
       if (res.status) {
+        this.createTime = util.timeToStr(new Date(), 2)
+        this.totalFiles = res.result
+        this.endTime = '-'
         this.dialogVisible = true
         this.running = true
         this.failName = []
         this.uploadName = []
+        this.successFiles = this.uploadName && this.uploadName.length > 0 ? this.uploadName.length : 0
+        this.failFiles = this.failName && this.failName.length > 0 ? this.failName.length : 0
         this.runningStatusTimer = setInterval(() => {
           this.getProcessRunningStatus()
         }, 5000)
@@ -192,7 +204,10 @@ export default {
         this.running = res.result.running
         this.failName = res.result.failName
         this.uploadName = res.result.uploadName
-        if (!res.result.running) {
+        this.successFiles = this.uploadName && this.uploadName.length > 0 ? this.uploadName.length : 0
+        this.failFiles = this.failName && this.failName.length > 0 ? this.failName.length : 0
+        if (res.result.running === false) {
+          this.endTime = util.timeToStr(new Date(), 2)
           clearInterval(this.runningStatusTimer)
         }
       }

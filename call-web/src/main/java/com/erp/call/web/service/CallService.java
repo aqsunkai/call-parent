@@ -51,9 +51,12 @@ public class CallService {
     @Autowired
     private IDGeneratorUtil idGeneratorUtil;
 
-    public void sendProduct(PageReq pageReq) {
+    public Integer sendProduct(PageReq pageReq) {
         File file = checkFilePath(pageReq);
-        executors.execute(() -> createProduct(pageReq, file));
+        File[] files = file.listFiles();
+        assert files != null;
+        executors.execute(() -> createProduct(pageReq, files));
+        return files.length;
     }
 
 //    public void sendErpProduct(PageReq pageReq) {
@@ -75,10 +78,8 @@ public class CallService {
         return file;
     }
 
-    private void createProduct(PageReq pageReq, File file) {
+    private void createProduct(PageReq pageReq, File[] files) {
         try {
-            File[] files = file.listFiles();
-            assert files != null;
             int count = 0;
             int length = files.length;
             for (File productFile : files) {

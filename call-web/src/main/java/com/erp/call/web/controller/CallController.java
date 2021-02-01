@@ -19,7 +19,7 @@ public class CallController {
     private CallService callService;
 
     @PostMapping(value = "/product/send")
-    public Result<String> sendProduct(@RequestBody PageReq pageReq) {
+    public Result<Integer> sendProduct(@RequestBody PageReq pageReq) {
         if (StringUtils.isEmpty(pageReq.getCookie())) {
             return Result.error("填写cookie");
         }
@@ -36,8 +36,7 @@ public class CallController {
             return Result.error("填写txt文件名");
         }
         pageReq.setCookie(pageReq.getCookie().trim());
-        callService.sendProduct(pageReq);
-        return Result.success(null);
+        return Result.success(callService.sendProduct(pageReq));
     }
 
 //    @PostMapping(value = "/erpProduct/send")
