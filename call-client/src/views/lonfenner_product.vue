@@ -48,8 +48,8 @@
   </el-form-item>
   <el-form-item label="上传完成播放音乐" prop="playMusic">
     <el-radio-group v-model="ruleForm.playMusic">
-      <el-radio :label="0">否</el-radio>
       <el-radio :label="1">是</el-radio>
+      <el-radio :label="0">否</el-radio>
     </el-radio-group>
   </el-form-item>
   <el-form-item label="Authorization" prop="cookie">
@@ -103,7 +103,7 @@ export default {
       ruleForm: {
         type: 1,
         priceType: 2,
-        playMusic: 1,
+        playMusic: 0,
         attachType: '',
         filePath: '',
         property: '属性图',
