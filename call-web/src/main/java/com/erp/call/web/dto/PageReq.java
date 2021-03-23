@@ -23,6 +23,10 @@ public class PageReq {
 
     private Boolean customDefCheck;
 
+    private Boolean newProduct;
+
+    private Integer variation;
+
     private CustomDef customDefs;
 
     private Integer playMusic;

@@ -7,6 +7,8 @@ import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -70,6 +72,80 @@ public class RequestData {
         return req;
     }
 
+    public static Object getNewProductReq(PageReq pageReq, String name, Map<String, String> variationMap,
+                                          Map<String, String> variationPriceMap, List<String> slaveMd5) {
+        ProductReq req = new ProductReq();
+        req.setCurrency("CNY");
+        req.setDimensionsUnit("CM");
+        req.setName(name);
+        req.setWeightUnit("G");
+        req.setSalePrice(Double.parseDouble(variationPriceMap.values().iterator().next()));
+
+        ProductDeclare declare = new ProductDeclare();
+        declare.setCurrency("USD");
+        req.setProductDeclare(declare);
+
+        List<Image> images = Lists.newArrayList();
+        List<String> md5s = new ArrayList<>();
+        md5s.addAll(variationMap.keySet());
+        md5s.addAll(slaveMd5);
+        int seq = 1;
+        for (String md5 : md5s) {
+            Image image1 = new Image();
+            image1.setSeq(seq);
+            image1.setSourceUrl("//cdn-images.x-oss.com/" + md5 + "/jpg");
+            image1.setStorageKey(md5);
+            images.add(image1);
+            seq++;
+        }
+        req.setImages(images);
+
+        req.setEnableChildVariation(true);
+        Collection<String> names = variationMap.values();
+        CustomDef customDef = pageReq.getCustomDefs();
+        customDef.setSeq(1);
+        customDef.setValueOptions(String.join(",", names));
+        req.setVariationDataCustomDefs(Lists.newArrayList(customDef));
+
+        List<CustomChildren> customChildrens = Lists.newArrayList();
+        int customSeq = 1;
+        for (Map.Entry<String, String> variation : variationMap.entrySet()) {
+            CustomChildren.VariationData.Item item = new CustomChildren.VariationData.Item();
+            item.setCode(customDef.getCode());
+            item.setValue(variation.getValue());
+            CustomChildren.VariationData variationData = new CustomChildren.VariationData();
+            variationData.setItems(Lists.newArrayList(item));
+            CustomChildren customChildren = new CustomChildren();
+            customChildren.setVariationData(variationData);
+            customChildren.setSeq(customSeq);
+            customChildren.setImage_card_visible(false);
+            customChildren.setSalePrice(variationPriceMap.get(variation.getKey()));
+
+            List<Image> customImages = new ArrayList<>();
+            Image image1 = new Image();
+            image1.setPurpose("MAIN");
+            image1.setSeq(1);
+            image1.setCheck(true);
+            image1.setSourceUrl("//cdn-images.x-oss.com/" + variation.getKey() + "/jpg");
+            image1.setStorageKey(variation.getKey());
+            customImages.add(image1);
+            for (int i = 2; i < slaveMd5.size() + 2; i++) {
+                Image image = new Image();
+                image.setPurpose("SHOWCASE");
+                image.setSeq(i);
+                image1.setCheck(true);
+                image.setSourceUrl("//cdn-images.x-oss.com/" + slaveMd5.get(i - 2) + "/jpg");
+                image.setStorageKey(slaveMd5.get(i - 2));
+                customImages.add(image);
+            }
+            customChildren.setImages(customImages);
+            customChildrens.add(customChildren);
+            customSeq++;
+        }
+        req.setChildren(customChildrens);
+        return req;
+    }
+
     public static ErpProductReq getErpProductReq(String product, String price, String masterId, String masterUrl, String masterSize,
                                                  Map<String, String> slaveUrl, Map<String, String> slaveSize, IDGeneratorUtil idGeneratorUtil) {
         ErpProductReq req = new ErpProductReq();
@@ -130,4 +206,5 @@ public class RequestData {
         req.setImage_info(imageInfo);
         return req;
     }
+
 }

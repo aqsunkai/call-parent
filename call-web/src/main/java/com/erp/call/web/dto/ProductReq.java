@@ -56,4 +56,6 @@ public class ProductReq {
 
     private String weightUnit;
 
+    private Boolean enableChildVariation;
+
 }

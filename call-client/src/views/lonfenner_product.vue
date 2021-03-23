@@ -1,6 +1,6 @@
 <template>
 <div>
-<h2 style="text-align: center;">洛菲纳跨境电商智慧生态系统</h2>
+<h2 style="text-align: center;">洛菲纳单产品</h2>
 <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="150px" class="lonfenner-product-ruleForm" size="small" >
   <el-form-item label="文件根路径" prop="filePath">
     <el-input v-model="ruleForm.filePath"></el-input>

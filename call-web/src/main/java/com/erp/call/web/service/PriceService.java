@@ -217,7 +217,7 @@ public class PriceService {
         for (String s : s1) {
             try {
                 double price = Double.parseDouble(s);
-                if (price<=30) {
+                if (price <= 30) {
                     sb.append(calculatePrice(price, treeMap));
                 } else {
                     sb.append("超过30");

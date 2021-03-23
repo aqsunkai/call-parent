@@ -13,4 +13,6 @@ public class Image {
 
     private String storageKey;
 
+    private Boolean check;
+
 }

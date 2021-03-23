@@ -17,6 +17,11 @@ export default new Router({
           icon: 'el-icon-upload2',
           component: () => import('@/views/lonfenner_product')
         },
+        {path: '/lonfennerVariation',
+          name: '洛菲纳变体',
+          icon: 'el-icon-upload2',
+          component: () => import('@/views/lonfenner_product_variation')
+        },
         {path: '/price',
           name: '修改价格',
           icon: 'el-icon-edit',

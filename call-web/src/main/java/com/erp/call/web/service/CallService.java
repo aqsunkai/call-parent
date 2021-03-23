@@ -20,10 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -106,6 +103,7 @@ public class CallService {
                                 continue;
                             }
                         }
+                        Arrays.sort(masterFiles);
                         logger.info("文件夹名称：{}，{}目录下图片开始上传", fileName, pageReq.getProperty());
                         for (File masterFile : masterFiles) {
                             // 上传列表文件夹图片
@@ -149,6 +147,8 @@ public class CallService {
                             logger.warn("文件夹名称：{}，{}目录下没有图片", fileName, pageReq.getAttachProperty());
                             continue;
                         }
+                        // 详情文件夹图片排序
+                        slaveFiles.sort(Comparator.comparing(File::getName));
                         logger.info("文件夹名称：{}，{}目录下图片开始上传", fileName, pageReq.getAttachProperty());
                         for (File masterFile : masterFiles) {
                             // 上传主图图片
@@ -178,56 +178,82 @@ public class CallService {
                     uploadFail(pageReq, fileName);
                     continue;
                 }
-                int failCount = 0;
-                for (Map.Entry<String, String> master : masterName.entrySet()) {
-                    boolean uploadSlave = true;
-                    Map<String, String> slaveName = Maps.newHashMap();
-                    if (slaveFiles.size() > 0) {
-                        // 上传主图图片
-                        logger.info("文件夹名称：{}，{}目录下图片开始上传{}产品所需图片", fileName, pageReq.getAttachProperty(), master.getValue());
-                        for (File slaveFile : slaveFiles) {
-                            UploadRes res = httpClientHelper.postFile(UPLOAD_URL, slaveFile, "file", getRequestHeader(pageReq.getCookie()), UploadRes.class);
-                            if (null != res && Boolean.TRUE.equals(res.getRet())) {
-                                slaveName.put(res.getInfo().getMd5(), slaveFile.getName().substring(0, slaveFile.getName().lastIndexOf(".")));
-                                logger.info("文件夹名称：{}，{}目录，上传{}图片成功，{}产品", fileName, pageReq.getAttachProperty(), slaveFile.getName(), master.getValue());
-                                sleepMoment();
-                            } else {
-                                logger.warn("文件夹名称：{}，{}目录，上传{}图片失败，导致{}产品无法创建", fileName, pageReq.getAttachProperty(), slaveFile.getName(), master.getValue());
-                                uploadSlave = false;
-                                break;
-                            }
+                boolean uploadSlave = true;
+                Map<String, String> slaveName = Maps.newLinkedHashMap();
+                if (slaveFiles.size() > 0) {
+                    // 详情文件夹图片排序
+                    slaveFiles.sort(Comparator.comparing(File::getName));
+                    // 上传详情文件夹图片
+                    logger.info("文件夹名称：{}，{}目录下图片开始上传", fileName, pageReq.getAttachProperty());
+                    for (File slaveFile : slaveFiles) {
+                        UploadRes res = httpClientHelper.postFile(UPLOAD_URL, slaveFile, "file", getRequestHeader(pageReq.getCookie()), UploadRes.class);
+                        if (null != res && Boolean.TRUE.equals(res.getRet())) {
+                            slaveName.put(res.getInfo().getMd5(), slaveFile.getName().substring(0, slaveFile.getName().lastIndexOf(".")));
+                            logger.info("文件夹名称：{}，{}目录，上传{}图片成功", fileName, pageReq.getAttachProperty(), slaveFile.getName());
+                            sleepMoment();
+                        } else {
+                            logger.warn("文件夹名称：{}，{}目录，上传{}图片失败，该文件夹下所有产品都不会创建", fileName, pageReq.getAttachProperty(), slaveFile.getName());
+                            uploadSlave = false;
+                            break;
                         }
                     }
-                    if (!uploadSlave) {
-                        uploadFail(pageReq, fileName);
-                        continue;
+                }
+                if (!uploadSlave) {
+                    uploadFail(pageReq, fileName);
+                    continue;
+                }
+                int failCount = 0;
+
+                if (Boolean.TRUE.equals(pageReq.getNewProduct())) {
+                    // 新变体产品，文件夹下产品合并上传到一个产品
+                    Map<String, String> variationMap = new LinkedHashMap<>();
+                    Map<String, String> variationPriceMap = new HashMap<>();
+                    int i = 1;
+                    for (Map.Entry<String, String> master : masterName.entrySet()) {
+                        String variationName = pageReq.getVariation() == 0 ? ProductNameData.changeProductName(master.getValue()) : String.valueOf(i);
+                        variationMap.put(master.getKey(), variationName);
+                        Double price = pageReq.getPriceType() == 0 ? getPriceFromPictureName(fileName, pageReq, master, slaveFileMd5) : 0D;
+                        variationPriceMap.put(master.getKey(), null == price ? "0" : String.valueOf(price));
+                        i++;
                     }
-                    String product = pageReq.getType() == 1 ? productName : ProductNameData.changeProductName(master.getValue());
-                    Double price = pageReq.getPriceType() == 0 ? getPriceFromPictureName(fileName, pageReq, master, slaveFileMd5) : null;
-                    String brandName = pageReq.getPriceType() == 1 ? master.getValue() : null;
-                    ProductRes res = httpClientHelper.put(PRODUCT_URL, RequestData.getProductReq(pageReq, product, brandName, price, master.getKey(),
+                    ProductRes res = httpClientHelper.put(PRODUCT_URL, RequestData.getNewProductReq(pageReq, productName, variationMap, variationPriceMap,
                             new ArrayList<>(slaveName.keySet())), getRequestHeader(pageReq.getCookie()), ProductRes.class);
                     if (null == res || Boolean.TRUE.equals(res.getCheckFail())) {
-                        if (slaveFileMd5.contains(master.getKey())) {
-                            logger.warn("文件夹名称：{}，{}目录下{}产品上传失败", fileName, pageReq.getAttachProperty(), master.getValue());
-                        } else {
-                            logger.warn("文件夹名称：{}，{}目录下{}产品上传失败", fileName, pageReq.getProperty(), master.getValue());
-                        }
+                        logger.warn("文件夹名称：{}，变体产品上传失败", fileName);
                         failCount++;
                     } else {
-                        if (slaveFileMd5.contains(master.getKey())) {
-                            logger.info("文件夹名称：{}，{}目录下{}产品上传成功", fileName, pageReq.getAttachProperty(), master.getValue());
-                        } else {
-                            logger.info("文件夹名称：{}，{}目录下{}产品上传成功", fileName, pageReq.getProperty(), master.getValue());
-                        }
+                        logger.info("文件夹名称：{}，变体产品上传成功", fileName);
                     }
                     sleepMomentForProduct();
+                } else {
+                    for (Map.Entry<String, String> master : masterName.entrySet()) {
+                        String product = pageReq.getType() == 1 ? productName : ProductNameData.changeProductName(master.getValue());
+                        Double price = pageReq.getPriceType() == 0 ? getPriceFromPictureName(fileName, pageReq, master, slaveFileMd5) : null;
+                        String brandName = pageReq.getPriceType() == 1 ? master.getValue() : null;
+                        ProductRes res = httpClientHelper.put(PRODUCT_URL, RequestData.getProductReq(pageReq, product, brandName, price, master.getKey(),
+                                new ArrayList<>(slaveName.keySet())), getRequestHeader(pageReq.getCookie()), ProductRes.class);
+                        if (null == res || Boolean.TRUE.equals(res.getCheckFail())) {
+                            if (slaveFileMd5.contains(master.getKey())) {
+                                logger.warn("文件夹名称：{}，{}目录下{}产品上传失败", fileName, pageReq.getAttachProperty(), master.getValue());
+                            } else {
+                                logger.warn("文件夹名称：{}，{}目录下{}产品上传失败", fileName, pageReq.getProperty(), master.getValue());
+                            }
+                            failCount++;
+                        } else {
+                            if (slaveFileMd5.contains(master.getKey())) {
+                                logger.info("文件夹名称：{}，{}目录下{}产品上传成功", fileName, pageReq.getAttachProperty(), master.getValue());
+                            } else {
+                                logger.info("文件夹名称：{}，{}目录下{}产品上传成功", fileName, pageReq.getProperty(), master.getValue());
+                            }
+                        }
+                        sleepMomentForProduct();
+                    }
                 }
                 if (failCount == 0) {
-                    logger.info("文件夹名称：{}，所有产品都上传成功", fileName);
+                    logger.info("第{}个文件夹名称：{}，所有产品都上传成功", count, fileName);
                     uploadSuccess(pageReq, fileName);
                 } else {
-                    logger.warn("文件夹名称：{}，有{}个产品上传失败", fileName, failCount);
+                    logger.warn("第{}个文件夹名称：{}，有{}个产品上传失败", count, fileName, failCount);
                     uploadFail(pageReq, fileName);
                 }
                 if (count < length) {

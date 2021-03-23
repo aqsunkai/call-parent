@@ -1,7 +1,7 @@
 <template>
 <div>
-<!-- <h2 style="text-align: center;">小米跨境电商ERP系统</h2> -->
-<el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="150px" class="xiaomi-ruleForm" size="small" >
+  <h2 style="text-align: center;">洛菲纳变体</h2>
+<el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="150px" class="lonfenner-product-ruleForm" size="small" >
   <el-form-item label="文件根路径" prop="filePath">
     <el-input v-model="ruleForm.filePath"></el-input>
   </el-form-item>
@@ -24,14 +24,38 @@
   </el-form-item>
   <el-form-item label="产品名称" prop="type">
     <el-radio-group v-model="ruleForm.type">
-      <el-radio :label="0">使用图片名称</el-radio>
       <el-radio :label="1">读取txt文件</el-radio>
     </el-radio-group>
   </el-form-item>
   <el-form-item label="txt文件名" prop="productNameFile" v-if="ruleForm.type==1">
     <el-input v-model="ruleForm.productNameFile"></el-input>
   </el-form-item>
-  <el-form-item label="cookie" prop="cookie">
+  <el-form-item label="商品变体" prop="customDefs">
+    <div>
+      <!-- <el-checkbox v-model="ruleForm.customDefCheck">使用</el-checkbox> -->
+      <el-input v-model="ruleForm.customDefs.code" style="width: 250px"></el-input>
+      <el-input v-model="ruleForm.customDefs.name" style="width: 250px"></el-input>
+    </div>
+  </el-form-item>
+  <el-form-item label="变体名称" prop="variation" v-if="ruleForm.customDefCheck==true">
+    <el-radio-group v-model="ruleForm.variation">
+      <el-radio :label="0">使用图片名称</el-radio>
+      <el-radio :label="1">默认自增</el-radio>
+    </el-radio-group>
+  </el-form-item>
+  <el-form-item label="变体价格" prop="priceType">
+    <el-radio-group v-model="ruleForm.priceType">
+      <el-radio :label="0">使用图片名称,取(前数字</el-radio>
+      <el-radio :label="2">默认无价格</el-radio>
+    </el-radio-group>
+  </el-form-item>
+  <el-form-item label="上传完成播放音乐" prop="playMusic">
+    <el-radio-group v-model="ruleForm.playMusic">
+      <el-radio :label="1">是</el-radio>
+      <el-radio :label="0">否</el-radio>
+    </el-radio-group>
+  </el-form-item>
+  <el-form-item label="Authorization" prop="cookie">
     <el-input type="textarea" rows="12" v-model="ruleForm.cookie"></el-input>
   </el-form-item>
   <el-form-item class="content_button">
@@ -41,9 +65,12 @@
   <el-dialog
   title="正在刷新创建的产品"
   :visible.sync="dialogVisible"
-  width="40%" center>
+  :close-on-click-modal="false"
+  :close-on-press-escape="false"
+  width="50%" center>
   <p v-if="running" style="color:#409EFF;text-align:center">正在创建</p>
   <p v-if="!running" style="color:#67C23A;text-align:center">创建完成</p>
+  <el-link type="info" disabled>开始时间：{{createTime}}，共{{totalFiles}}个文件夹，成功{{successFiles}}个文件夹，失败{{failFiles}}个文件夹，完成时间：{{endTime}}</el-link>
   <p style="color:#909399;text-align:center">创建成功产品</p>
   <div v-for="(item,index) in uploadName" :key="1000+index">
     <span>{{item}}</span>
@@ -61,7 +88,8 @@
 </template>
 <script>
 import { Message } from 'element-ui'
-import { erpProductSend, productResult } from '@/api'
+import { productSend, productResult } from '@/api'
+import { util } from '@/utils/util'
 export default {
   data () {
     return {
@@ -70,14 +98,28 @@ export default {
       running: true,
       failName: [],
       uploadName: [],
+      createTime: '-',
+      successFiles: 0,
+      failFiles: 0,
+      endTime: '-',
+      totalFiles: 0,
       ruleForm: {
+        newProduct: true,
+        variation: 1,
         type: 1,
+        priceType: 2,
+        playMusic: 0,
         attachType: '',
         filePath: '',
         property: '属性图',
         attachProperty: '主图',
         productNameFile: '下图记录',
-        cookie: ''
+        cookie: '',
+        customDefCheck: true,
+        customDefs: {
+          code: 'Color',
+          name: '颜色'
+        }
       },
       rules: {
         filePath: [
@@ -93,7 +135,7 @@ export default {
           { required: true, message: '请选择文件夹关系', trigger: 'blur' }
         ],
         cookie: [
-          { required: true, message: '请输入cookie', trigger: 'blur' }
+          { required: true, message: '请输入Authorization', trigger: 'blur' }
         ]
       }
     }
@@ -108,7 +150,16 @@ export default {
     submitForm (formName) {
       if (this.ruleForm.type === 1 && !this.ruleForm.productNameFile) {
         Message({
-          message: 'txt文件名',
+          message: '读取txt文件时需要输入txt文件名',
+          type: 'error',
+          duration: 3 * 1000,
+          showClose: true
+        })
+        return
+      }
+      if (this.ruleForm.customDefCheck === true && !(this.ruleForm.customDefs.code && this.ruleForm.customDefs.name)) {
+        Message({
+          message: '商品变体需要全部输入',
           type: 'error',
           duration: 3 * 1000,
           showClose: true
@@ -117,20 +168,39 @@ export default {
       }
       this.$refs[formName].validate(async (valid) => {
         if (valid) {
-          const res = await erpProductSend(this.ruleForm)
-          if (res.status) {
-            this.dialogVisible = true
-            this.running = true
-            this.failName = []
-            this.uploadName = []
-            this.runningStatusTimer = setInterval(() => {
-              this.getProcessRunningStatus()
-            }, 5000)
+          if (this.ruleForm.customDefCheck !== true && (this.ruleForm.customDefs.code || this.ruleForm.customDefs.name)) {
+            this.$confirm('商品变体输入了内容，但未选择使用，确定后则不会创建商品变体', '提示', {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
+            }).then(() => {
+              this.sendProduct()
+            }).catch(() => {
+            })
+          } else {
+            this.sendProduct()
           }
         } else {
           return false
         }
       })
+    },
+    async sendProduct () {
+      const res = await productSend(this.ruleForm)
+      if (res.status) {
+        this.createTime = util.timeToStr(new Date(), 2)
+        this.totalFiles = res.result
+        this.endTime = '-'
+        this.dialogVisible = true
+        this.running = true
+        this.failName = []
+        this.uploadName = []
+        this.successFiles = this.uploadName && this.uploadName.length > 0 ? this.uploadName.length : 0
+        this.failFiles = this.failName && this.failName.length > 0 ? this.failName.length : 0
+        this.runningStatusTimer = setInterval(() => {
+          this.getProcessRunningStatus()
+        }, 5000)
+      }
     },
     async getProcessRunningStatus () {
       const res = await productResult(this.ruleForm)
@@ -138,7 +208,10 @@ export default {
         this.running = res.result.running
         this.failName = res.result.failName
         this.uploadName = res.result.uploadName
-        if (!res.result.running) {
+        this.successFiles = this.uploadName && this.uploadName.length > 0 ? this.uploadName.length : 0
+        this.failFiles = this.failName && this.failName.length > 0 ? this.failName.length : 0
+        if (res.result.running === false) {
+          this.endTime = util.timeToStr(new Date(), 2)
           clearInterval(this.runningStatusTimer)
         }
       }
@@ -150,7 +223,7 @@ export default {
 }
 </script>
 <style lang="scss">
-.xiaomi-ruleForm{
+.lonfenner-product-ruleForm{
   width: 800px;
   margin: 0 auto;
   .content_button{
