@@ -3,16 +3,16 @@ package com.erp.call.web.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FileUtil {
 
     private static Logger logger = LoggerFactory.getLogger(FileUtil.class);
 
-    public static String txt2String(String fileName, File file) {
-        StringBuilder result = new StringBuilder();
+    public static List<String> txt2ListString(String fileName, File file) {
+        List<String> result = new ArrayList<>();
         BufferedReader br = null;
         try {
             //构造一个BufferedReader类来读取文件
@@ -20,7 +20,7 @@ public class FileUtil {
             String s;
             //使用readLine方法，一次读一行
             while ((s = br.readLine()) != null) {
-                result.append(s).append("\n");
+                result.add(s);
             }
             br.close();
         } catch (Exception e) {
@@ -34,7 +34,7 @@ public class FileUtil {
                 }
             }
         }
-        return result.toString();
+        return result;
     }
 
     public static String readFirstLine(String fileName, File file) {
@@ -86,9 +86,32 @@ public class FileUtil {
         return "";
     }
 
-//    public static void main(String[] args) throws IOException {
+    //    public static void main(String[] args) throws IOException {
 //        File file = new File("D:\\call\\aaaaaaaaaa\\1 (114)\\下图记录.txt");
 //        BufferedReader br = new BufferedReader(new FileReader(file));
 //        System.out.println(br.readLine());
 //    }
+    public static void writerFile(String content, String url) {
+        boolean flag = true;
+        try {
+            //创建File对象，参数为String类型，表示目录名
+            File myFile = new File(url);
+            //判断文件是否存在，如果不存在则调用createNewFile()方法创建新目录，否则跳至异常处理代码
+            if (!myFile.exists()) {
+                myFile.createNewFile();
+            } else {  //如果不存在则扔出异常
+                throw new Exception("The new file already exists!");
+            }
+            //下面把数据写入创建的文件，首先新建文件名为参数创建FileWriter对象
+            FileWriter resultFile = new FileWriter(myFile);
+            //把该对象包装进PrinterWriter对象
+            PrintWriter myNewFile = new PrintWriter(resultFile);
+            //再通过PrinterWriter对象的println()方法把字符串数据写入新建文件
+            myNewFile.println(content);
+            resultFile.close();   //关闭文件写入流
+        } catch (Exception ex) {
+            System.out.println("无法创建新文件！");
+            flag = false;
+        }
+    }
 }

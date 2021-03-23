@@ -16,6 +16,7 @@ public class ProductNameData {
     private static List<String> firstLetterNotCapitalized = Lists.newArrayList();
 
     static {
+        forbiddenWords.add("2018");
         forbiddenWords.add("2019");
         forbiddenWords.add("2020");
         forbiddenWords.add("2021");
@@ -27,11 +28,18 @@ public class ProductNameData {
         forbiddenWords.add("new arrival");
         forbiddenWords.add("new arrive");
         forbiddenWords.add("new original");
+        forbiddenWords.add("new pattern");
+        forbiddenWords.add("elegant fashion");
+        forbiddenWords.add("cool fashion");
         forbiddenWords.add("high-end");
         forbiddenWords.add("high-quality");
+        forbiddenWords.add("top-quality");
         forbiddenWords.add("high quality");
         forbiddenWords.add("top quality");
+        forbiddenWords.add("good quality");
+        forbiddenWords.add("high capacity");
         forbiddenWords.add("large-capacity");
+        forbiddenWords.add("low price");
         forbiddenWords.add("top rated");
         forbiddenWords.add("brand designer");
         forbiddenWords.add("famous designer");
@@ -49,6 +57,9 @@ public class ProductNameData {
         forbiddenWords.add("best seller");
         forbiddenWords.add("branded");
         forbiddenWords.add("giveaway");
+        forbiddenWords.add("new");
+        forbiddenWords.add("discount");
+        forbiddenWords.add("promotion");
 
         firstLetterNotCapitalized.add("and");
         firstLetterNotCapitalized.add("or");

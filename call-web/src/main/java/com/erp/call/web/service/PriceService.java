@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author sunkai
@@ -67,6 +68,7 @@ public class PriceService {
                 try {
                     for (File productFile : productFiles) {
                         if (productFile.getName().endsWith(".url")) {
+                            TimeUnit.SECONDS.sleep(1);
                             String url = FileUtil.readPrefixLine(folder.getName(), "URL=", productFile);
                             if (StringUtils.isEmpty(url)) {
                                 break;
@@ -142,7 +144,7 @@ public class PriceService {
         }
     }
 
-    private String calculatePrice(double price, TreeMap<Double, String> map) {
+    private static String calculatePrice(double price, TreeMap<Double, String> map) {
         String previous = "";
         double previousKey = 0D;
         for (Map.Entry<Double, String> entry : map.entrySet()) {
@@ -159,7 +161,7 @@ public class PriceService {
         return previous;
     }
 
-    private TreeMap<Double, String> getPriceMap(String calPattern) {
+    private static TreeMap<Double, String> getPriceMap(String calPattern) {
         String[] patterns = calPattern.split("\n|\n|\t");
         TreeMap<Double, String> map = new TreeMap<>(Comparator.reverseOrder());
         double d1 = 0.001D;
@@ -188,25 +190,44 @@ public class PriceService {
         return res;
     }
 
-//    public static void main(String[] args) {
-//        String ca = "<4:14.97\n" + //3.999以下
-//                "        4-5:15.97\n" + //4.001-4.999
-//                "        6-7:16.97\n" +
-//                "        8:17.97\n" +
-//                "        9:18.97\n" +
-//                "        10:19.97\n" +
-//                "        11:20.97\n" +
-//                "        12:21.97\n" +
-//                "        13:22.97\n" +
-//                "        14:23.97\n" +
-//                "        15:24.97\n" +
-//                "        16:25.97\n" +
-//                "        17:26.97\n" +
-//                "        18:27.97\n" +
-//                "        19:28.97\n" +
-//                "        20:29.97";
-//        TreeMap<Double, String> treeMap = getPriceMap(ca);
-//        System.out.println(treeMap);
-//        System.out.println(calculatePrice(3.9999D, treeMap));
-//    }
+    public static void main(String[] args) {
+        String ca = "<=16:29.97\n" +
+                "17:30.97\n" +
+                "18:31.97\n" +
+                "19:32.97\n" +
+                "20:33.97\n" +
+                "21:34.97\n" +
+                "22:35.97\n" +
+                "23:36.97\n" +
+                "24:37.97\n" +
+                "25:38.97\n" +
+                "26:39.97\n" +
+                "27:40.97\n" +
+                "28:41.97\n" +
+                "29:42.97\n" +
+                "30:43.97";
+        TreeMap<Double, String> treeMap = getPriceMap(ca);
+        changeTxtPrice(treeMap);
+    }
+
+    private static void changeTxtPrice(TreeMap<Double, String> treeMap) {
+        File file = new File("C:\\Users\\sunkai9203\\Desktop\\33.txt");
+        List<String> s1 = FileUtil.txt2ListString(file.getName(), file);
+        StringBuilder sb = new StringBuilder();
+        for (String s : s1) {
+            try {
+                double price = Double.parseDouble(s);
+                if (price<=30) {
+                    sb.append(calculatePrice(price, treeMap));
+                } else {
+                    sb.append("超过30");
+                }
+            } catch (Exception ignored) {
+                sb.append("不是数字");
+            }
+            sb.append("\n");
+        }
+        FileUtil.writerFile(sb.toString(), "C:\\Users\\sunkai9203\\Desktop\\44.txt");
+    }
+
 }

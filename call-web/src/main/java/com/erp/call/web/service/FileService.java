@@ -226,7 +226,11 @@ public class FileService {
         }
         // 不同数据类型处理
         int fromCellType = fromCell.getCellType();
-        toCell.setCellType(fromCellType);
+        if (fromCellType == Cell.CELL_TYPE_FORMULA) {
+            toCell.setCellType(Cell.CELL_TYPE_STRING);
+        } else {
+            toCell.setCellType(fromCellType);
+        }
         if (fromCellType == Cell.CELL_TYPE_NUMERIC) {
             if (DateUtil.isCellDateFormatted(fromCell)) {
                 toCell.setCellValue(fromCell.getDateCellValue());
@@ -242,7 +246,7 @@ public class FileService {
         } else if (fromCellType == Cell.CELL_TYPE_ERROR) {
             toCell.setCellErrorValue(fromCell.getErrorCellValue());
         } else if (fromCellType == Cell.CELL_TYPE_FORMULA) {
-            toCell.setCellFormula(fromCell.getCellFormula());
+            toCell.setCellValue(fromCell.getRichStringCellValue());
         } else { // nothing29
         }
 
