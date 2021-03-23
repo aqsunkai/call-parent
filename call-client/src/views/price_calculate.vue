@@ -20,15 +20,15 @@
       <el-radio :label="2">最大值</el-radio>
     </el-radio-group>
   </el-form-item>
-  <el-form-item label="价格转换" prop="calPattern">
+  <el-form-item label="价格计算公式" prop="calPattern">
     <el-input type="textarea" rows="10" :placeholder="priceTxt" v-model="ruleForm.calPattern"></el-input>
   </el-form-item>
   <el-form-item class="content_button">
-    <el-button type="primary" @click="submitForm('ruleForm')">修改价格</el-button>
+    <el-button type="primary" @click="submitForm('ruleForm')">计算价格</el-button>
   </el-form-item>
-    <el-alert type = 'warning' center show-icon effect="dark" v-show="showRes == 1" title="正在拼命修改价格，请耐心等待"></el-alert>
-    <el-alert type = 'success' center show-icon effect="dark" v-show="showRes == 2" title="价格全部修改成功"></el-alert>
-    <el-alert type = 'error' center show-icon effect="dark" v-show="showRes == 3" title="价格部分修改失败，失败的文件夹如下"></el-alert>
+    <el-alert type = 'warning' center show-icon effect="dark" v-show="showRes == 1" title="正在拼命计算价格，请耐心等待"></el-alert>
+    <el-alert type = 'success' center show-icon effect="dark" v-show="showRes == 2" title="价格全部计算成功"></el-alert>
+    <el-alert type = 'error' center show-icon effect="dark" v-show="showRes == 3" title="价格部分计算失败，失败的文件夹如下"></el-alert>
     <div v-if="errorFolder.length > 0">
        <div v-for="(item,index) in errorFolder" :key="index">
         <span>{{item}}</span>
@@ -93,7 +93,7 @@ export default {
           { required: true, message: '请输入图片文件夹名称', trigger: 'blur' }
         ],
         calPattern: [
-          { required: true, message: '请输入价格修改方式', trigger: 'blur' }
+          { required: true, message: '请输入价格计算公式', trigger: 'blur' }
         ]
       }
     }

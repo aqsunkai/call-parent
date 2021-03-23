@@ -14,4 +14,6 @@ public class PriceReq {
     private Integer intervalType;
 
     private String calPattern;
+
+    private String frontPrice;
 }

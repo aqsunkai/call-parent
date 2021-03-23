@@ -22,10 +22,15 @@ export default new Router({
           icon: 'el-icon-upload2',
           component: () => import('@/views/lonfenner_product_variation')
         },
-        {path: '/price',
-          name: '修改价格',
+        {path: '/calculatePrice',
+          name: '计算价格',
           icon: 'el-icon-edit',
           component: () => import('@/views/price_calculate')
+        },
+        {path: '/changePrice',
+          name: '转换价格',
+          icon: 'el-icon-edit',
+          component: () => import('@/views/price_change')
         },
         {path: '/splitFile',
           name: '拆分文件',

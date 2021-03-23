@@ -144,7 +144,7 @@ public class PriceService {
         }
     }
 
-    private static String calculatePrice(double price, TreeMap<Double, String> map) {
+    private String calculatePrice(double price, TreeMap<Double, String> map) {
         String previous = "";
         double previousKey = 0D;
         for (Map.Entry<Double, String> entry : map.entrySet()) {
@@ -161,7 +161,7 @@ public class PriceService {
         return previous;
     }
 
-    private static TreeMap<Double, String> getPriceMap(String calPattern) {
+    private TreeMap<Double, String> getPriceMap(String calPattern) {
         String[] patterns = calPattern.split("\n|\n|\t");
         TreeMap<Double, String> map = new TreeMap<>(Comparator.reverseOrder());
         double d1 = 0.001D;
@@ -181,6 +181,27 @@ public class PriceService {
             }
         }
         return map;
+    }
+
+    public String changePrice(PriceReq priceReq) {
+        TreeMap<Double, String> treeMap = getPriceMap(priceReq.getCalPattern());
+        Double maxPrice = treeMap.keySet().iterator().next();
+        String[] prices = priceReq.getFrontPrice().split("\n|\n|\t");
+        StringBuilder sb = new StringBuilder();
+        for (String s : prices) {
+            try {
+                double price = Double.parseDouble(s);
+                if (price <= maxPrice) {
+                    sb.append(calculatePrice(price, treeMap));
+                } else {
+                    sb.append("超过").append(maxPrice);
+                }
+            } catch (Exception ignored) {
+                sb.append("不是数字");
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 
     public PageRes getCalculateResult(String filePath) {
@@ -206,28 +227,28 @@ public class PriceService {
                 "28:41.97\n" +
                 "29:42.97\n" +
                 "30:43.97";
-        TreeMap<Double, String> treeMap = getPriceMap(ca);
-        changeTxtPrice(treeMap);
+//        TreeMap<Double, String> treeMap = getPriceMap(ca);
+//        changeTxtPrice(treeMap);
     }
 
-    private static void changeTxtPrice(TreeMap<Double, String> treeMap) {
-        File file = new File("C:\\Users\\sunkai9203\\Desktop\\33.txt");
-        List<String> s1 = FileUtil.txt2ListString(file.getName(), file);
-        StringBuilder sb = new StringBuilder();
-        for (String s : s1) {
-            try {
-                double price = Double.parseDouble(s);
-                if (price <= 30) {
-                    sb.append(calculatePrice(price, treeMap));
-                } else {
-                    sb.append("超过30");
-                }
-            } catch (Exception ignored) {
-                sb.append("不是数字");
-            }
-            sb.append("\n");
-        }
-        FileUtil.writerFile(sb.toString(), "C:\\Users\\sunkai9203\\Desktop\\44.txt");
-    }
+//    private static void changeTxtPrice(TreeMap<Double, String> treeMap) {
+//        File file = new File("C:\\Users\\sunkai9203\\Desktop\\33.txt");
+//        List<String> s1 = FileUtil.txt2ListString(file.getName(), file);
+//        StringBuilder sb = new StringBuilder();
+//        for (String s : s1) {
+//            try {
+//                double price = Double.parseDouble(s);
+//                if (price <= 30) {
+//                    sb.append(calculatePrice(price, treeMap));
+//                } else {
+//                    sb.append("超过30");
+//                }
+//            } catch (Exception ignored) {
+//                sb.append("不是数字");
+//            }
+//            sb.append("\n");
+//        }
+//        FileUtil.writerFile(sb.toString(), "C:\\Users\\sunkai9203\\Desktop\\44.txt");
+//    }
 
 }

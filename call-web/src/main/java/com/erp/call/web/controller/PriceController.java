@@ -30,4 +30,9 @@ public class PriceController {
         return Result.success(priceService.getCalculateResult(filePath.trim()));
     }
 
+    @PostMapping(value = "/change")
+    public Result<String> change(@RequestBody PriceReq priceReq) {
+        return Result.success(priceService.changePrice(priceReq));
+    }
+
 }

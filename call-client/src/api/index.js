@@ -42,3 +42,10 @@ export function calculateResult (params) {
     params: params
   })
 }
+export function priceChange (data) {
+  return Axios({
+    url: `/api/price/change`,
+    method: 'post',
+    data: data
+  })
+}
