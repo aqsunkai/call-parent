@@ -19,6 +19,11 @@ public class NumberUtil {
         return b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
+    public static String formatStringScale2(double d) {
+        BigDecimal b = new BigDecimal(d);
+        return b.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+    }
+
     public static String changeInt(int num) {
         if (num < 10) {
             return "0" + num;

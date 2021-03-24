@@ -9,6 +9,8 @@ public class PriceReq {
 
     private String property;
 
+    private Integer sourcePlatform;
+
     private Integer valueType;
 
     private Integer intervalType;

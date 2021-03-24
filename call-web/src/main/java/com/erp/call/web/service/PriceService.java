@@ -55,7 +55,11 @@ public class PriceService {
     public void calculate(PriceReq priceReq, File file) {
         Set<String> errorFolder = Sets.newHashSet();
         try {
-            TreeMap<Double, String> map = getPriceMap(priceReq.getCalPattern());
+            TreeMap<Double, String> map = null;
+            boolean ifOriginalPrice = "原价".equals(priceReq.getCalPattern());
+            if (!ifOriginalPrice) {
+                map = getPriceMap(priceReq.getCalPattern());
+            }
             File[] files = file.listFiles();
             assert files != null;
             List<String> calPriceFolder = Arrays.asList(priceReq.getProperty().replace(" ", "").replace("，", ",").split(","));
@@ -80,34 +84,22 @@ public class PriceService {
                                 logger.error("文件夹：" + folder.getName() + "查询价格失败");
                                 break;
                             }
-                            if (priceReq.getValueType() == 0) {
-                                // 优先使用促销价格
-                                if (str.contains("formatedActivityPrice")) {
-                                    str = str.substring(str.indexOf("formatedActivityPrice\":\"US $") + 28);
-                                } else {
-                                    str = str.substring(str.indexOf("formatedPrice\":\"US $") + 20);
-                                }
-                            } else {
-                                // 强制使用完整价格
-                                str = str.substring(str.indexOf("formatedPrice\":\"US $") + 20);
-                            }
-                            str = str.substring(0, str.indexOf("\","));
                             double price;
-                            if (str.contains("-")) {
-                                if (priceReq.getIntervalType() == 0) {
-                                    // 取最小值
-                                    price = Double.parseDouble(str.split("-")[0]);
-                                } else if (priceReq.getIntervalType() == 2) {
-                                    // 取最大值
-                                    price = Double.parseDouble(str.split("-")[1]);
-                                } else {
-                                    price = NumberUtil.formatDoubleScale2((Double.parseDouble(str.split("-")[0]) + Double.parseDouble(str.split("-")[1])) / 2);
-                                }
+                            if (priceReq.getSourcePlatform() == 0) {
+                                price = getPriceFromAliExpress(priceReq, str);
                             } else {
+                                //1688
+                                str = str.substring(str.indexOf("refPrice:'") + 10);
+                                str = str.substring(0, str.indexOf("',"));
                                 price = Double.parseDouble(str);
                             }
                             // 查询自己卖的价格
-                            priceStr = calculatePrice(price, map);
+                            if (ifOriginalPrice) {
+                                priceStr = String.valueOf(NumberUtil.formatStringScale2(price));
+                            } else {
+                                priceStr = calculatePrice(price, map);
+                            }
+                            break;
                         }
                     }
                     if (StringUtils.isEmpty(priceStr)) {
@@ -144,26 +136,57 @@ public class PriceService {
         }
     }
 
+    private double getPriceFromAliExpress(PriceReq priceReq, String str) {
+        double price;// 速卖通
+        if (priceReq.getValueType() == 0) {
+            // 优先使用促销价格
+            if (str.contains("formatedActivityPrice")) {
+                str = str.substring(str.indexOf("formatedActivityPrice\":\"US $") + 28);
+            } else {
+                str = str.substring(str.indexOf("formatedPrice\":\"US $") + 20);
+            }
+        } else {
+            // 强制使用完整价格
+            str = str.substring(str.indexOf("formatedPrice\":\"US $") + 20);
+        }
+        str = str.substring(0, str.indexOf("\","));
+        if (str.contains("-")) {
+            if (priceReq.getIntervalType() == 0) {
+                // 取最小值
+                price = Double.parseDouble(str.split("-")[0]);
+            } else if (priceReq.getIntervalType() == 2) {
+                // 取最大值
+                price = Double.parseDouble(str.split("-")[1]);
+            } else {
+                price = NumberUtil.formatDoubleScale2((Double.parseDouble(str.split("-")[0]) + Double.parseDouble(str.split("-")[1])) / 2);
+            }
+        } else {
+            price = Double.parseDouble(str);
+        }
+        return price;
+    }
+
     private String calculatePrice(double price, TreeMap<Double, String> map) {
         String previous = "";
         double previousKey = 0D;
+        String originPrice = String.valueOf(NumberUtil.formatStringScale2(price));
         for (Map.Entry<Double, String> entry : map.entrySet()) {
             if (price > entry.getKey()) {
                 if (Math.abs(NumberUtil.formatDoubleScale3(previousKey - price)) > Math.abs(NumberUtil.formatDoubleScale3(price - entry.getKey()))) {
-                    return entry.getValue();
+                    return "原价".equals(entry.getValue()) ? originPrice : entry.getValue();
                 } else {
-                    return previous;
+                    return "原价".equals(previous) ? originPrice : previous;
                 }
             }
             previousKey = entry.getKey();
             previous = entry.getValue();
         }
-        return previous;
+        return "原价".equals(previous) ? originPrice : previous;
     }
 
     private TreeMap<Double, String> getPriceMap(String calPattern) {
-        String[] patterns = calPattern.split("\n|\n|\t");
         TreeMap<Double, String> map = new TreeMap<>(Comparator.reverseOrder());
+        String[] patterns = calPattern.split("\n|\n|\t");
         double d1 = 0.001D;
         for (String pattern : patterns) {
             String[] priceStr = pattern.replace(" ", "").split(":");

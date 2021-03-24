@@ -7,13 +7,19 @@
   <el-form-item label="图片文件夹名称" prop="property">
     <el-input v-model="ruleForm.property" :placeholder="propertyTxt" ></el-input>
   </el-form-item>
-  <el-form-item label="价格取值方式" prop="valueType">
+  <el-form-item label="原平台" prop="sourcePlatform">
+    <el-radio-group v-model="ruleForm.sourcePlatform">
+      <el-radio :label="0">速卖通</el-radio>
+      <el-radio :label="1">1688</el-radio>
+    </el-radio-group>
+  </el-form-item>
+  <el-form-item label="价格取值方式" prop="valueType" v-if="ruleForm.sourcePlatform==0">
     <el-radio-group v-model="ruleForm.valueType">
       <el-radio :label="0">优先使用促销价格</el-radio>
       <el-radio :label="1">强制使用完整价格</el-radio>
     </el-radio-group>
   </el-form-item>
-  <el-form-item label="区间价格取值" prop="intervalType">
+  <el-form-item label="区间价格取值" prop="intervalType" v-if="ruleForm.sourcePlatform==0">
     <el-radio-group v-model="ruleForm.intervalType">
       <el-radio :label="0">最小值</el-radio>
       <el-radio :label="1">中间值</el-radio>
@@ -57,7 +63,8 @@ export default {
         '17:26.97\n' +
         '18:27.97\n' +
         '19:28.97\n' +
-        '20:29.97',
+        '20:29.97\n' +
+        '21-100:原价',
       propertyTxt: '多个文件夹以逗号,分隔',
       errorFolder: [],
       result: '',
@@ -66,6 +73,7 @@ export default {
       ruleForm: {
         filePath: '',
         property: '属性图',
+        sourcePlatform: 0,
         valueType: 0,
         intervalType: 2,
         calPattern: '<4:14.97\n' +
@@ -83,7 +91,8 @@ export default {
         '17:26.97\n' +
         '18:27.97\n' +
         '19:28.97\n' +
-        '20:29.97'
+        '20:29.97\n' +
+        '21-100:原价'
       },
       rules: {
         filePath: [
