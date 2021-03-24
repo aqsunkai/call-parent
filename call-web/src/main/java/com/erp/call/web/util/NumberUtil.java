@@ -19,4 +19,10 @@ public class NumberUtil {
         return b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
+    public static String changeInt(int num) {
+        if (num < 10) {
+            return "0" + num;
+        }
+        return num + "";
+    }
 }

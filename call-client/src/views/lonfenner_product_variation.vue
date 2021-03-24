@@ -43,6 +43,12 @@
       <el-radio :label="1">默认自增</el-radio>
     </el-radio-group>
   </el-form-item>
+  <el-form-item label="自增前缀" prop="incrPrefix" v-if="ruleForm.variation==1">
+    <div>
+      <el-input v-model="ruleForm.incrPrefix" style="width: 250px"></el-input>
+      <el-input v-model="ruleForm.incrSuffix" disabled style="width: 250px"></el-input>
+    </div>
+  </el-form-item>
   <el-form-item label="变体价格" prop="priceType">
     <el-radio-group v-model="ruleForm.priceType">
       <el-radio :label="0">使用图片名称,取(前数字</el-radio>
@@ -119,7 +125,9 @@ export default {
         customDefs: {
           code: 'Color',
           name: '颜色'
-        }
+        },
+        incrPrefix: 'smartSK',
+        incrSuffix: '01'
       },
       rules: {
         filePath: [

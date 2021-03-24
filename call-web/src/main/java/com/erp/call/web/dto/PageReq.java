@@ -27,6 +27,10 @@ public class PageReq {
 
     private Integer variation;
 
+    private String incrPrefix;
+
+    private String incrSuffix;
+
     private CustomDef customDefs;
 
     private Integer playMusic;

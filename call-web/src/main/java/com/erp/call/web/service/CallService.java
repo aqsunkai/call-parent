@@ -6,10 +6,7 @@ import com.erp.call.web.dto.PageReq;
 import com.erp.call.web.dto.PageRes;
 import com.erp.call.web.dto.ProductRes;
 import com.erp.call.web.dto.UploadRes;
-import com.erp.call.web.util.FileUtil;
-import com.erp.call.web.util.HttpClientHelper;
-import com.erp.call.web.util.IDGeneratorUtil;
-import com.erp.call.web.util.PlayerUtil;
+import com.erp.call.web.util.*;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
@@ -121,6 +118,7 @@ public class CallService {
                         List<File> masterFiles = Lists.newArrayList();
                         File[] listFiles = imageFile.listFiles();
                         assert listFiles != null;
+                        Arrays.sort(listFiles);
                         if (pageReq.getAttachType() == 0) {
                             // 列表文件夹和详情文件夹平级，即两个文件夹都作为主图
                             masterFiles.addAll(Arrays.asList(listFiles));
@@ -148,7 +146,7 @@ public class CallService {
                             continue;
                         }
                         // 详情文件夹图片排序
-                        slaveFiles.sort(Comparator.comparing(File::getName));
+                        masterFiles.sort(Comparator.comparing(File::getName));
                         logger.info("文件夹名称：{}，{}目录下图片开始上传", fileName, pageReq.getAttachProperty());
                         for (File masterFile : masterFiles) {
                             // 上传主图图片
@@ -209,8 +207,9 @@ public class CallService {
                     Map<String, String> variationMap = new LinkedHashMap<>();
                     Map<String, String> variationPriceMap = new HashMap<>();
                     int i = 1;
+                    String incrPrefix = StringUtils.isNotEmpty(pageReq.getIncrPrefix()) ? pageReq.getIncrPrefix() : "";
                     for (Map.Entry<String, String> master : masterName.entrySet()) {
-                        String variationName = pageReq.getVariation() == 0 ? ProductNameData.changeProductName(master.getValue()) : String.valueOf(i);
+                        String variationName = pageReq.getVariation() == 0 ? ProductNameData.changeProductName(master.getValue()) : incrPrefix + NumberUtil.changeInt(i);
                         variationMap.put(master.getKey(), variationName);
                         Double price = pageReq.getPriceType() == 0 ? getPriceFromPictureName(fileName, pageReq, master, slaveFileMd5) : 0D;
                         variationPriceMap.put(master.getKey(), null == price ? "0" : String.valueOf(price));
