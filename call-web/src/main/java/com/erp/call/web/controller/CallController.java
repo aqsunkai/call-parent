@@ -32,7 +32,7 @@ public class CallController {
         if (StringUtils.isEmpty(pageReq.getAttachProperty())) {
             return Result.error("填写详情文件夹名称");
         }
-        if (pageReq.getType() == 1 && StringUtils.isEmpty(pageReq.getProductNameFile())) {
+        if ((pageReq.getType() == 1 || pageReq.getPriceType() == 3) && StringUtils.isEmpty(pageReq.getProductNameFile())) {
             return Result.error("填写txt文件名");
         }
         pageReq.setCookie(pageReq.getCookie().trim());

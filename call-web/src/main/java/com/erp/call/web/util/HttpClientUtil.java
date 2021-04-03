@@ -44,8 +44,8 @@ public class HttpClientUtil {
         cm.setMaxTotal(200);
         cm.setDefaultMaxPerRoute(20);
         httpClient = HttpClients.custom()
-                .setConnectionManager(cm)
-                .build();
+            .setConnectionManager(cm)
+            .build();
     }
 
     /**
@@ -63,9 +63,9 @@ public class HttpClientUtil {
         httpPost.addHeader("Content-Type", "application/json; charset=" + CHAR_SET);
 
         RequestConfig config = RequestConfig.custom()
-                .setConnectionRequestTimeout(CONNECTION_REQUEST_TIMEOUT)
-                .setConnectTimeout(connectTimeout)
-                .setSocketTimeout(socketTimeout).build();
+            .setConnectionRequestTimeout(CONNECTION_REQUEST_TIMEOUT)
+            .setConnectTimeout(connectTimeout)
+            .setSocketTimeout(socketTimeout).build();
 
         httpPost.setConfig(config);
         StringEntity se = new StringEntity(jsonStr, CHAR_SET);
@@ -77,7 +77,7 @@ public class HttpClientUtil {
                 return EntityUtils.toString(response.getEntity(), CHAR_SET);
             } else {
                 logger.warn("request is failure,url:{},statusCode:{},errorMsg:{}", url,
-                        response.getStatusLine().getStatusCode(), EntityUtils.toString(response.getEntity(), CHAR_SET));
+                    response.getStatusLine().getStatusCode(), EntityUtils.toString(response.getEntity(), CHAR_SET));
                 throw new RuntimeException("request is failure,code:" + response.getStatusLine().getStatusCode());
             }
         } catch (Exception e) {
@@ -110,9 +110,9 @@ public class HttpClientUtil {
     public static HttpResponse getWithHttpResponse(String url, Map<String, String> params) throws IOException {
         if (null != params && !params.isEmpty()) {
             String paramStr = Joiner.on("&")
-                    .withKeyValueSeparator("=")
-                    .useForNull("")
-                    .join(params);
+                .withKeyValueSeparator("=")
+                .useForNull("")
+                .join(params);
             url = url + "?" + paramStr;
         }
         return get(url, CONNECT_TIMEOUT, SOCKET_TIMEOUT);
@@ -143,9 +143,9 @@ public class HttpClientUtil {
     public static HttpResponse get(String url, int connectTimeout, int socketTimeout) throws IOException {
         HttpGet httpGet = new HttpGet(url);
         RequestConfig config = RequestConfig.custom()
-                .setConnectionRequestTimeout(CONNECTION_REQUEST_TIMEOUT)
-                .setConnectTimeout(connectTimeout)
-                .setSocketTimeout(socketTimeout).build();
+            .setConnectionRequestTimeout(CONNECTION_REQUEST_TIMEOUT)
+            .setConnectTimeout(connectTimeout)
+            .setSocketTimeout(socketTimeout).build();
         httpGet.setConfig(config);
         HttpResponse response = httpClient.execute(httpGet);
         if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {

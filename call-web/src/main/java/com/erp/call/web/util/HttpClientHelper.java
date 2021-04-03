@@ -55,8 +55,8 @@ public class HttpClientHelper {
         cm.setMaxTotal(1000);
         cm.setDefaultMaxPerRoute(100);
         this.httpClient = HttpClients.custom()
-                .setConnectionManager(cm)
-                .build();
+            .setConnectionManager(cm)
+            .build();
     }
 
     public <T> T postFile(String url, File file, String uploadName, Map<String, String> headers, Class<T> clazz) {
@@ -101,9 +101,9 @@ public class HttpClientHelper {
         }
 
         RequestConfig config = RequestConfig.custom()
-                .setConnectionRequestTimeout(CONNECTION_REQUEST_TIMEOUT)
-                .setConnectTimeout(CONNECT_TIMEOUT)
-                .setSocketTimeout(SOCKET_TIMEOUT).build();
+            .setConnectionRequestTimeout(CONNECTION_REQUEST_TIMEOUT)
+            .setConnectTimeout(CONNECT_TIMEOUT)
+            .setSocketTimeout(SOCKET_TIMEOUT).build();
         httpRequest.setConfig(config);
 
         StringEntity se = new StringEntity(jsonStr, CHAR_SET);
@@ -116,7 +116,7 @@ public class HttpClientHelper {
                 return EntityUtils.toString(response.getEntity(), CHAR_SET);
             } else {
                 logger.warn("request is failure,url:{},statusCode:{},errorMsg:{}", url, response.getStatusLine().getStatusCode(),
-                        EntityUtils.toString(response.getEntity(), CHAR_SET));
+                    EntityUtils.toString(response.getEntity(), CHAR_SET));
                 return null;
             }
         } finally {
@@ -139,9 +139,9 @@ public class HttpClientHelper {
         }
 
         RequestConfig config = RequestConfig.custom()
-                .setConnectionRequestTimeout(CONNECTION_REQUEST_TIMEOUT)
-                .setConnectTimeout(CONNECT_TIMEOUT)
-                .setSocketTimeout(SOCKET_TIMEOUT).build();
+            .setConnectionRequestTimeout(CONNECTION_REQUEST_TIMEOUT)
+            .setConnectTimeout(CONNECT_TIMEOUT)
+            .setSocketTimeout(SOCKET_TIMEOUT).build();
         httpost.setConfig(config);
 
         MultipartEntityBuilder mEntityBuilder = MultipartEntityBuilder.create();
@@ -160,7 +160,7 @@ public class HttpClientHelper {
                 return EntityUtils.toString(response.getEntity(), CHAR_SET);
             } else {
                 logger.warn("executeFile is failure,url:{},statusCode:{},errorMsg:{}", url,
-                        response.getStatusLine().getStatusCode(), EntityUtils.toString(response.getEntity(), CHAR_SET));
+                    response.getStatusLine().getStatusCode(), EntityUtils.toString(response.getEntity(), CHAR_SET));
                 return null;
             }
         } finally {
@@ -193,9 +193,9 @@ public class HttpClientHelper {
         }
 
         RequestConfig config = RequestConfig.custom()
-                .setConnectionRequestTimeout(CONNECTION_REQUEST_TIMEOUT)
-                .setConnectTimeout(CONNECT_TIMEOUT)
-                .setSocketTimeout(SOCKET_TIMEOUT).build();
+            .setConnectionRequestTimeout(CONNECTION_REQUEST_TIMEOUT)
+            .setConnectTimeout(CONNECT_TIMEOUT)
+            .setSocketTimeout(SOCKET_TIMEOUT).build();
         httpost.setConfig(config);
 
         List<NameValuePair> nvpList = new ArrayList<>();
@@ -209,7 +209,7 @@ public class HttpClientHelper {
                 return EntityUtils.toString(response.getEntity(), CHAR_SET);
             } else {
                 logger.warn("postFormData is failure,url:{},statusCode:{},errorMsg:{}", url,
-                        response.getStatusLine().getStatusCode(), EntityUtils.toString(response.getEntity(), CHAR_SET));
+                    response.getStatusLine().getStatusCode(), EntityUtils.toString(response.getEntity(), CHAR_SET));
                 return null;
             }
         } finally {

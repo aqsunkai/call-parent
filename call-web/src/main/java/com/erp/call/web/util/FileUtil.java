@@ -3,7 +3,11 @@ package com.erp.call.web.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,12 +41,23 @@ public class FileUtil {
         return result;
     }
 
-    public static String readFirstLine(String fileName, File file) {
+    /**
+     * 指定读取第几行
+     *
+     * @param fileName
+     * @param file
+     * @param line     第几行
+     * @return
+     */
+    public static String readExplicitLine(String fileName, File file, int line) {
         StringBuilder result = new StringBuilder();
         BufferedReader br = null;
         try {
             //构造一个BufferedReader类来读取文件
             br = new BufferedReader(new FileReader(file));
+            for (int i = 1; i < line; i++) {
+                br.readLine();
+            }
             result.append(br.readLine());
             br.close();
         } catch (Exception e) {
@@ -114,4 +129,5 @@ public class FileUtil {
             flag = false;
         }
     }
+
 }

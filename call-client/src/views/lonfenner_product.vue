@@ -25,16 +25,17 @@
   <el-form-item label="产品名称" prop="type">
     <el-radio-group v-model="ruleForm.type">
       <el-radio :label="0">使用图片名称</el-radio>
-      <el-radio :label="1">读取txt文件</el-radio>
+      <el-radio :label="1">读取txt文件第一行</el-radio>
     </el-radio-group>
   </el-form-item>
-  <el-form-item label="txt文件名" prop="productNameFile" v-if="ruleForm.type==1">
+  <el-form-item label="txt文件名" prop="productNameFile">
     <el-input v-model="ruleForm.productNameFile"></el-input>
   </el-form-item>
   <el-form-item label="产品价格" prop="priceType">
     <el-radio-group v-model="ruleForm.priceType">
       <el-radio :label="0">使用图片名称,取(前数字</el-radio>
-      <el-radio :label="1">使用图片名称,放入品牌名</el-radio>
+      <el-radio :label="1">使用图片名称,放入品牌名</el-radio><br>
+      <el-radio :label="3" style="margin-top: 8px">读取txt文件第二行</el-radio>
       <el-radio :label="2">默认无价格</el-radio>
     </el-radio-group>
   </el-form-item>
@@ -144,7 +145,7 @@ export default {
   },
   methods: {
     submitForm (formName) {
-      if (this.ruleForm.type === 1 && !this.ruleForm.productNameFile) {
+      if ((this.ruleForm.type === 1 || this.ruleForm.priceType === 3) && !this.ruleForm.productNameFile) {
         Message({
           message: '读取txt文件时需要输入txt文件名',
           type: 'error',

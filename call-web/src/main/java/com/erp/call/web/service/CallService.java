@@ -6,7 +6,11 @@ import com.erp.call.web.dto.PageReq;
 import com.erp.call.web.dto.PageRes;
 import com.erp.call.web.dto.ProductRes;
 import com.erp.call.web.dto.UploadRes;
-import com.erp.call.web.util.*;
+import com.erp.call.web.util.FileUtil;
+import com.erp.call.web.util.HttpClientHelper;
+import com.erp.call.web.util.IDGeneratorUtil;
+import com.erp.call.web.util.NumberUtil;
+import com.erp.call.web.util.PlayerUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
@@ -17,13 +21,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static com.erp.call.web.constant.HttpConstant.*;
+import static com.erp.call.web.constant.HttpConstant.PRODUCT_URL;
+import static com.erp.call.web.constant.HttpConstant.UPLOAD_URL;
+import static com.erp.call.web.constant.HttpConstant.getRequestHeader;
 
 @Service
 public class CallService {
@@ -74,19 +86,27 @@ public class CallService {
 
     private void createProduct(PageReq pageReq, File[] files) {
         try {
+            Map<String, String> variationTransferMap = getVariationTransferMap(pageReq.getVariationTransfer());
             int count = 0;
             int length = files.length;
             for (File productFile : files) {
                 count++;
+                if (productFile.isHidden()) {
+                    continue;
+                }
                 File[] imageFiles = productFile.listFiles();
                 assert imageFiles != null;
                 String fileName = productFile.getName();
                 String productName = null;
+                Double priceTxt = null;
                 Map<String, String> masterName = Maps.newLinkedHashMap();
                 boolean upload = true;
                 List<File> slaveFiles = Lists.newArrayList();
                 List<String> slaveFileMd5 = Lists.newArrayList();
                 for (File imageFile : imageFiles) {
+                    if (imageFile.isHidden()) {
+                        continue;
+                    }
                     if (pageReq.getProperty().equals(imageFile.getName())) {
                         File[] masterFiles = imageFile.listFiles();
                         if (null == masterFiles || masterFiles.length == 0) {
@@ -103,6 +123,9 @@ public class CallService {
                         Arrays.sort(masterFiles);
                         logger.info("文件夹名称：{}，{}目录下图片开始上传", fileName, pageReq.getProperty());
                         for (File masterFile : masterFiles) {
+                            if (masterFile.isHidden()) {
+                                continue;
+                            }
                             // 上传列表文件夹图片
                             UploadRes res = httpClientHelper.postFile(UPLOAD_URL, masterFile, "file", getRequestHeader(pageReq.getCookie()), UploadRes.class);
                             if (null != res && Boolean.TRUE.equals(res.getRet())) {
@@ -130,6 +153,9 @@ public class CallService {
                             // 列表文件夹和详情文件夹第一张作为主图，详情文件夹剩下的图片作为附图
                             boolean flag = true;
                             for (File listFile : listFiles) {
+                                if (listFile.isHidden()) {
+                                    continue;
+                                }
                                 if (flag) {
                                     masterFiles.add(listFile);
                                 } else {
@@ -149,6 +175,9 @@ public class CallService {
                         masterFiles.sort(Comparator.comparing(File::getName));
                         logger.info("文件夹名称：{}，{}目录下图片开始上传", fileName, pageReq.getAttachProperty());
                         for (File masterFile : masterFiles) {
+                            if (masterFile.isHidden()) {
+                                continue;
+                            }
                             // 上传主图图片
                             UploadRes res = httpClientHelper.postFile(UPLOAD_URL, masterFile, "file", getRequestHeader(pageReq.getCookie()), UploadRes.class);
                             if (null != res && Boolean.TRUE.equals(res.getRet())) {
@@ -161,15 +190,26 @@ public class CallService {
                                 sleepMomentFail();
                             }
                         }
-                    } else if (pageReq.getType() == 1 && imageFile.getName().startsWith(pageReq.getProductNameFile())) {
-                        // txt文件夹名称
-                        productName = FileUtil.readFirstLine(fileName, imageFile);
-                        if (StringUtils.isBlank(productName)) {
-                            logger.warn("文件夹名称：{}，读取{}文件，产品名称不存在，该文件夹下所有产品都不会创建", fileName, pageReq.getProductNameFile());
-                            upload = false;
-                            break;
+                    } else if (imageFile.getName().startsWith(pageReq.getProductNameFile())) {
+                        if (pageReq.getType() == 1) {
+                            // txt文件夹名称
+                            productName = FileUtil.readExplicitLine(fileName, imageFile, 1);
+                            if (StringUtils.isBlank(productName)) {
+                                logger.warn("文件夹名称：{}，读取{}文件，第一行产品名称不存在，该文件夹下所有产品都不会创建", fileName, pageReq.getProductNameFile());
+                                upload = false;
+                                break;
+                            }
+                            productName = ProductNameData.changeProductName(productName);
                         }
-                        productName = ProductNameData.changeProductName(productName);
+                        if (pageReq.getPriceType() == 3) {
+                            String priceTxt1 = FileUtil.readExplicitLine(fileName, imageFile, 2);
+                            priceTxt = changePrice(priceTxt1);
+                            if (null == priceTxt) {
+                                logger.warn("文件夹名称：{}，读取{}文件，第二行不是数字，该文件夹下所有产品都不会创建", fileName, pageReq.getProductNameFile());
+                                upload = false;
+                                break;
+                            }
+                        }
                     }
                 }
                 if (!upload || masterName.size() == 0) {
@@ -184,6 +224,9 @@ public class CallService {
                     // 上传详情文件夹图片
                     logger.info("文件夹名称：{}，{}目录下图片开始上传", fileName, pageReq.getAttachProperty());
                     for (File slaveFile : slaveFiles) {
+                        if (slaveFile.isHidden()) {
+                            continue;
+                        }
                         UploadRes res = httpClientHelper.postFile(UPLOAD_URL, slaveFile, "file", getRequestHeader(pageReq.getCookie()), UploadRes.class);
                         if (null != res && Boolean.TRUE.equals(res.getRet())) {
                             slaveName.put(res.getInfo().getMd5(), slaveFile.getName().substring(0, slaveFile.getName().lastIndexOf(".")));
@@ -208,15 +251,28 @@ public class CallService {
                     Map<String, String> variationPriceMap = new HashMap<>();
                     int i = 1;
                     String incrPrefix = StringUtils.isNotEmpty(pageReq.getIncrPrefix()) ? pageReq.getIncrPrefix() : "";
+                    List<String> variationList = Lists.newArrayList();
                     for (Map.Entry<String, String> master : masterName.entrySet()) {
-                        String variationName = pageReq.getVariation() == 0 ? ProductNameData.changeProductName(master.getValue()) : incrPrefix + NumberUtil.changeInt(i);
+                        String variationName;
+                        if (pageReq.getVariation() == 0) {
+                            variationName = ProductNameData.changeProductName(master.getValue());
+                            if (variationTransferMap.containsKey(variationName)) {
+                                String variationNameTransfer = variationTransferMap.get(variationName);
+                                if (!variationList.contains(variationNameTransfer)) {
+                                    variationName = variationNameTransfer;
+                                    variationList.add(variationName);
+                                }
+                            }
+                        } else {
+                            variationName = incrPrefix + NumberUtil.changeInt(i);
+                        }
                         variationMap.put(master.getKey(), variationName);
-                        Double price = pageReq.getPriceType() == 0 ? getPriceFromPictureName(fileName, pageReq, master, slaveFileMd5) : 0D;
+                        Double price = pageReq.getPriceType() == 0 ? getPriceFromPictureName(fileName, pageReq, master, slaveFileMd5) : (pageReq.getPriceType() == 3 ? priceTxt : null);
                         variationPriceMap.put(master.getKey(), null == price ? "0" : String.valueOf(price));
                         i++;
                     }
                     ProductRes res = httpClientHelper.put(PRODUCT_URL, RequestData.getNewProductReq(pageReq, productName, variationMap, variationPriceMap,
-                            new ArrayList<>(slaveName.keySet())), getRequestHeader(pageReq.getCookie()), ProductRes.class);
+                        new ArrayList<>(slaveName.keySet())), getRequestHeader(pageReq.getCookie()), ProductRes.class);
                     if (null == res || Boolean.TRUE.equals(res.getCheckFail())) {
                         logger.warn("文件夹名称：{}，变体产品上传失败", fileName);
                         failCount++;
@@ -227,10 +283,10 @@ public class CallService {
                 } else {
                     for (Map.Entry<String, String> master : masterName.entrySet()) {
                         String product = pageReq.getType() == 1 ? productName : ProductNameData.changeProductName(master.getValue());
-                        Double price = pageReq.getPriceType() == 0 ? getPriceFromPictureName(fileName, pageReq, master, slaveFileMd5) : null;
+                        Double price = pageReq.getPriceType() == 0 ? getPriceFromPictureName(fileName, pageReq, master, slaveFileMd5) : (pageReq.getPriceType() == 3 ? priceTxt : null);
                         String brandName = pageReq.getPriceType() == 1 ? master.getValue() : null;
                         ProductRes res = httpClientHelper.put(PRODUCT_URL, RequestData.getProductReq(pageReq, product, brandName, price, master.getKey(),
-                                new ArrayList<>(slaveName.keySet())), getRequestHeader(pageReq.getCookie()), ProductRes.class);
+                            new ArrayList<>(slaveName.keySet())), getRequestHeader(pageReq.getCookie()), ProductRes.class);
                         if (null == res || Boolean.TRUE.equals(res.getCheckFail())) {
                             if (slaveFileMd5.contains(master.getKey())) {
                                 logger.warn("文件夹名称：{}，{}目录下{}产品上传失败", fileName, pageReq.getAttachProperty(), master.getValue());
@@ -269,6 +325,28 @@ public class CallService {
         }
     }
 
+    private Map<String, String> getVariationTransferMap(String variationTransfer) {
+        Map<String, String> variationTransferMap = Maps.newHashMap();
+        if (StringUtils.isEmpty(variationTransfer)) {
+            return variationTransferMap;
+        }
+        String[] splits = variationTransfer.split(",");
+        for (String split : splits) {
+            String[] va = split.split(":");
+            variationTransferMap.put(va[0], va[1]);
+        }
+        Map<String, String> maps = Maps.newHashMap();
+        for (Map.Entry<String, String> entry : variationTransferMap.entrySet()) {
+            if (!entry.getKey().endsWith("色")) {
+                maps.put(entry.getKey() + "色", entry.getValue());
+            } else {
+                maps.put(entry.getKey().substring(0, entry.getKey().length() - 1), entry.getValue());
+            }
+        }
+        variationTransferMap.putAll(maps);
+        return variationTransferMap;
+    }
+
     private Double getPriceFromPictureName(String fileName, PageReq pageReq, Map.Entry<String, String> master, List<String> slaveFileMd5) {
         try {
             String price = master.getValue().replace("（", "(");
@@ -282,6 +360,14 @@ public class CallService {
             } else {
                 logger.warn("文件夹名称：{}，{}目录下{}产品名称不是数字，该产品不生成价格", fileName, pageReq.getProperty(), master.getValue());
             }
+        }
+        return null;
+    }
+
+    private Double changePrice(String price) {
+        try {
+            return Double.valueOf(price);
+        } catch (Exception ignored) {
         }
         return null;
     }

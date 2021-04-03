@@ -24,7 +24,7 @@
   </el-form-item>
   <el-form-item label="产品名称" prop="type">
     <el-radio-group v-model="ruleForm.type">
-      <el-radio :label="1">读取txt文件</el-radio>
+      <el-radio :label="1">读取txt文件第一行</el-radio>
     </el-radio-group>
   </el-form-item>
   <el-form-item label="txt文件名" prop="productNameFile" v-if="ruleForm.type==1">
@@ -43,6 +43,9 @@
       <el-radio :label="1">默认自增</el-radio>
     </el-radio-group>
   </el-form-item>
+  <el-form-item label="变体名称转换" prop="variationTransfer" v-if="ruleForm.variation==0">
+    <el-input type="textarea" rows="4" v-model="ruleForm.variationTransfer"></el-input>
+  </el-form-item>
   <el-form-item label="自增前缀" prop="incrPrefix" v-if="ruleForm.variation==1">
     <div>
       <el-input v-model="ruleForm.incrPrefix" style="width: 250px"></el-input>
@@ -52,6 +55,7 @@
   <el-form-item label="变体价格" prop="priceType">
     <el-radio-group v-model="ruleForm.priceType">
       <el-radio :label="0">使用图片名称,取(前数字</el-radio>
+      <el-radio :label="3">读取txt文件第二行</el-radio>
       <el-radio :label="2">默认无价格</el-radio>
     </el-radio-group>
   </el-form-item>
@@ -112,6 +116,7 @@ export default {
       ruleForm: {
         newProduct: true,
         variation: 1,
+        variationTransfer: '米:Beige,黑:Black,蓝:Blue,青铜:Bronze,棕:Brown,黄金:Gold,金:Gold,绿:Green,灰:Grey,卡其:Grey,五颜六色:Multicoloured,橘黄:Orange,橘:Orange,橙:Orange,桔:Orange,粉红:Pink,粉:Pink,紫:Purple,红:Red,透明:Transparent,绿松石:Turquoise,白:White,黄:Yellow,金属:metallic,灰白:off-white,银:silver,多:Multicolor,清除:Clear',
         type: 1,
         priceType: 2,
         playMusic: 0,
@@ -156,7 +161,7 @@ export default {
   },
   methods: {
     submitForm (formName) {
-      if (this.ruleForm.type === 1 && !this.ruleForm.productNameFile) {
+      if ((this.ruleForm.type === 1 || this.ruleForm.priceType === 3) && !this.ruleForm.productNameFile) {
         Message({
           message: '读取txt文件时需要输入txt文件名',
           type: 'error',

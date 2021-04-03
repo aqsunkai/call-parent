@@ -3,7 +3,7 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <contextName>logback</contextName>
 
-    <property name="log.path" value="D:/call/logs" />
+<!--    <property name="log.path" value="/Users/zhangchenghui/sunkai/call/logs" />-->
 
     <!-- 彩色日志 -->
     <!-- 彩色日志依赖的渲染类 -->

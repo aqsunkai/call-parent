@@ -27,6 +27,8 @@ public class PageReq {
 
     private Integer variation;
 
+    private String variationTransfer;
+
     private String incrPrefix;
 
     private String incrSuffix;

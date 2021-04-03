@@ -1,6 +1,13 @@
 package com.erp.call.web.constant;
 
-import com.erp.call.web.dto.*;
+import com.erp.call.web.dto.CustomChildren;
+import com.erp.call.web.dto.CustomDef;
+import com.erp.call.web.dto.ErpProductReq;
+import com.erp.call.web.dto.Extend;
+import com.erp.call.web.dto.Image;
+import com.erp.call.web.dto.PageReq;
+import com.erp.call.web.dto.ProductDeclare;
+import com.erp.call.web.dto.ProductReq;
 import com.erp.call.web.util.IDGeneratorUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

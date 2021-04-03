@@ -13,7 +13,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -236,20 +241,20 @@ public class PriceService {
 
     public static void main(String[] args) {
         String ca = "<=16:29.97\n" +
-                "17:30.97\n" +
-                "18:31.97\n" +
-                "19:32.97\n" +
-                "20:33.97\n" +
-                "21:34.97\n" +
-                "22:35.97\n" +
-                "23:36.97\n" +
-                "24:37.97\n" +
-                "25:38.97\n" +
-                "26:39.97\n" +
-                "27:40.97\n" +
-                "28:41.97\n" +
-                "29:42.97\n" +
-                "30:43.97";
+            "17:30.97\n" +
+            "18:31.97\n" +
+            "19:32.97\n" +
+            "20:33.97\n" +
+            "21:34.97\n" +
+            "22:35.97\n" +
+            "23:36.97\n" +
+            "24:37.97\n" +
+            "25:38.97\n" +
+            "26:39.97\n" +
+            "27:40.97\n" +
+            "28:41.97\n" +
+            "29:42.97\n" +
+            "30:43.97";
 //        TreeMap<Double, String> treeMap = getPriceMap(ca);
 //        changeTxtPrice(treeMap);
     }
