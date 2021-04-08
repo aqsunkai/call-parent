@@ -271,7 +271,27 @@ public class CallService {
                         variationPriceMap.put(master.getKey(), null == price ? "0" : String.valueOf(price));
                         i++;
                     }
-                    ProductRes res = httpClientHelper.put(PRODUCT_URL, RequestData.getNewProductReq(pageReq, productName, variationMap, variationPriceMap,
+                    Map<String, String> variationMap1;
+                    if (pageReq.getVariation() == 0) {
+                        variationMap1 = new LinkedHashMap<>();
+                        // 白色、黑色展示在前面
+                        variationMap.forEach((k, v) -> {
+                            if ("White".equals(v)) {
+                                variationMap1.put(k, v);
+                            }
+                            if ("Black".equals(v)) {
+                                variationMap1.put(k, v);
+                            }
+                        });
+                        variationMap.forEach((k, v) -> {
+                            if (!"White".equals(v) && !"Black".equals(v)) {
+                                variationMap1.put(k, v);
+                            }
+                        });
+                    } else {
+                        variationMap1 = variationMap;
+                    }
+                    ProductRes res = httpClientHelper.put(PRODUCT_URL, RequestData.getNewProductReq(pageReq, productName, variationMap1, variationPriceMap,
                         new ArrayList<>(slaveName.keySet())), getRequestHeader(pageReq.getCookie()), ProductRes.class);
                     if (null == res || Boolean.TRUE.equals(res.getCheckFail())) {
                         logger.warn("文件夹名称：{}，变体产品上传失败", fileName);
@@ -344,6 +364,12 @@ public class CallService {
             }
         }
         variationTransferMap.putAll(maps);
+        Map<String, String> maps1 = Maps.newHashMap();
+        for (Map.Entry<String, String> entry : variationTransferMap.entrySet()) {
+            maps1.put("浅" + entry.getKey(), "Light " + entry.getValue());
+            maps1.put("深" + entry.getKey(), "Dark " + entry.getValue());
+        }
+        variationTransferMap.putAll(maps1);
         return variationTransferMap;
     }
 

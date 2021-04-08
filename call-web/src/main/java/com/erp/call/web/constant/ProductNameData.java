@@ -13,6 +13,7 @@ import java.util.List;
 public class ProductNameData {
 
     private static List<String> forbiddenWords = Lists.newArrayList();
+    private static List<String> upperWords = Lists.newArrayList();
     private static List<String> firstLetterNotCapitalized = Lists.newArrayList();
 
     static {
@@ -60,6 +61,7 @@ public class ProductNameData {
         forbiddenWords.add("new");
         forbiddenWords.add("discount");
         forbiddenWords.add("promotion");
+        forbiddenWords.add("baguette");
 
         firstLetterNotCapitalized.add("and");
         firstLetterNotCapitalized.add("or");
@@ -71,6 +73,8 @@ public class ProductNameData {
         firstLetterNotCapitalized.add("on");
         firstLetterNotCapitalized.add("over");
         firstLetterNotCapitalized.add("with");
+
+        upperWords.add("pu");
     }
 
     public static String changeProductName(String productName) {
@@ -85,10 +89,14 @@ public class ProductNameData {
         String[] newWords = newName.split(" ");
         StringBuilder sb = new StringBuilder();
         for (String newWord : newWords) {
-            if (!firstLetterNotCapitalized.contains(newWord)) {
+            if (forbiddenWords.contains(newWord)) {
                 newWord = newWord.substring(0, 1).toUpperCase() + newWord.substring(1);
+                sb.append(newWord).append(" ");
+            } else if (upperWords.contains(newWord)) {
+                sb.append(newWord.toUpperCase()).append(" ");
+            } else {
+                sb.append(newWord).append(" ");
             }
-            sb.append(newWord).append(" ");
         }
         return sb.toString().trim();
     }
