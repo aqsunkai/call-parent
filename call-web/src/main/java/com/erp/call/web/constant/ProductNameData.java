@@ -89,13 +89,12 @@ public class ProductNameData {
         String[] newWords = newName.split(" ");
         StringBuilder sb = new StringBuilder();
         for (String newWord : newWords) {
-            if (forbiddenWords.contains(newWord)) {
-                newWord = newWord.substring(0, 1).toUpperCase() + newWord.substring(1);
+            if (firstLetterNotCapitalized.contains(newWord)) {
                 sb.append(newWord).append(" ");
             } else if (upperWords.contains(newWord)) {
                 sb.append(newWord.toUpperCase()).append(" ");
             } else {
-                sb.append(newWord).append(" ");
+                sb.append(newWord.substring(0, 1).toUpperCase()).append(newWord.substring(1)).append(" ");
             }
         }
         return sb.toString().trim();
